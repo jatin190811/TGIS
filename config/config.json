@@ -1,0 +1,15 @@
+{
+  "basepath" : "/home/piyush/Desktop/hapi",
+  "server":{
+    "host": "127.0.0.1",
+    "port" : 8090
+  },
+  "database": {
+          "host": "weddingDb-20994d6d.mongo.ondigitalocean.com",
+          "port": 27017,
+          "db": "admin",
+          "username": "doadmin",
+          "password": "op578Hy4w20nG13W",
+          "dbType": "mongodb"
+  }
+}
