@@ -3,6 +3,18 @@ const client = require('../config/database')
 const jwt = require('jsonwebtoken');
 var ObjectId = require('mongodb').ObjectId;
 
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
+
+
 async function login(req, res) {
     let username, password, type
     if (!req.body.username) {
@@ -194,7 +206,7 @@ async function frgtPassword(req, res) {
 
 
 async function rcvrPassword(req, res) {
-    let ref, otp, password;
+    let ref, otp;
     if (!req.body.ref) {
         return res.json({ status: 'error', error: '020', message: 'Reference not found' })
     } else {
@@ -207,12 +219,40 @@ async function rcvrPassword(req, res) {
         otp = String(req.body.otp).toLowerCase().trim()
     }
 
+    await client.connect();
+
+    let collection
+    if (!req.body.type) {
+        collection = await client.db("admin").collection('users');
+    } else if (req.body.type == 'vendor') {
+        collection = await client.db("admin").collection('vendors');
+    }
+    let nref = makeid(14)
+    console.log(nref)
+    let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { forgetPasswordOtp: otp }] }, { $set: { ref : nref  } })
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Otp Successfully matched', data: { ref: nref} })
+    } else {
+        return res.json({ status: 'error', error: '023', message: 'Invalid Otp' })
+    }
+
+}
+
+
+
+async function changePassword(req, res) {
+    let ref, password;
+    if (!req.body.ref) {
+        return res.json({ status: 'error', error: '020', message: 'Reference not found' })
+    } else {
+        ref = String(req.body.ref)
+    }
+
     if (!req.body.password) {
-        return res.json({ status: 'error', error: '022', message: 'Password not found' })
+        return res.json({ status: 'error', error: '021', message: 'OTP not found' })
     } else {
         password = String(req.body.password).trim()
     }
-
 
     await client.connect();
 
@@ -222,10 +262,10 @@ async function rcvrPassword(req, res) {
     } else if (req.body.type == 'vendor') {
         collection = await client.db("admin").collection('vendors');
     }
-
-    let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { forgetPasswordOtp: otp }] }, { $set: { password } })
+   
+    let result = await collection.updateOne({ $and: [{ ref:ref }] }, { $set: { password : password  } })
     if (result.modifiedCount) {
-        return res.json({ status: 'success', message: 'Password Successfully Updated', data: {} })
+        return res.json({ status: 'success', message: 'Password Successfully changed', data: {} })
     } else {
         return res.json({ status: 'error', error: '023', message: 'Invalid Otp' })
     }
@@ -277,7 +317,29 @@ async function verifyregisteration(req, res) {
     let collection = await client.db("admin").collection('users');
     let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { otp: otp }] }, { $set: { 'active': true } })
     if (result.modifiedCount) {
-        return res.json({ status: 'success', message: 'Account Successfully created', data: {} })
+        let cursor = collection.find({ _id: new ObjectId(ref) })
+        let user = await cursor.toArray()
+        if (user.length) {
+            if (!user[0].active) {
+                return res.json({ status: 'error', error: '003', message: 'User Not Active' })
+            }
+    
+            let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
+            let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
+            if (result.modifiedCount) {
+                return res.json({
+                    status: 'success', message: 'User Found', data: {
+                        token: token
+                    }
+                })
+            } else {
+                return res.json({ status: 'error', error: '003', message: 'Something went wrong' })
+            }
+    
+        } else {
+            return res.json({ status: 'error', error: '004', message: 'Incorrect username or password' })
+        }
+    
     } else {
         return res.json({ status: 'error', error: '026', message: 'Invalid Otp' })
     }
@@ -286,7 +348,8 @@ async function verifyregisteration(req, res) {
 
 
 async function socialSign(req, res) {
-    let name, email, socialId
+    let name, email, socialId, token , type
+    
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
@@ -299,8 +362,20 @@ async function socialSign(req, res) {
         email = String(req.body.email).toLowerCase().trim()
     }
 
+    if (!req.body.type) {
+        return res.json({ status: 'error', error: '008', message: 'social type not found' })
+    } else {
+        socialId = String(req.body.socialId).trim()
+    }
+
+    if (!req.body.token) {
+        return res.json({ status: 'error', error: '008', message: 'social token not found' })
+    } else {
+        socialId = String(req.body.socialId).trim()
+    }
+
     if (!req.body.socialId) {
-        return res.json({ status: 'error', error: '008', message: 'Something Went Wrong' })
+        return res.json({ status: 'error', error: '008', message: 'Something not found' })
     } else {
         socialId = String(req.body.socialId).trim()
     }
@@ -311,15 +386,17 @@ async function socialSign(req, res) {
     let cursor = collection.find({ $or: [{ email: email }] })
     let user = await cursor.toArray()
     if (!user.length) {
-        await collection.insertOne({ name, email, socialId, active: true })
+        await collection.insertOne({ name, email,  socialId, type,  socialId, socialtoken: token, active: true })
+        cursor = collection.find({ email: email })
+        user = await cursor.toArray()
     }
 
-    let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
-    let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
+    let jwttoken = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
+    let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: jwttoken } })
     if (result.modifiedCount) {
         return res.json({
             status: 'success', message: 'User Found', data: {
-                token: token
+                token: jwttoken
             }
         })
     } else {
@@ -336,5 +413,6 @@ exports.onboarding = onboarding;
 exports.verifyonboarding = verifyonboarding
 exports.frgtPassword = frgtPassword;
 exports.rcvrPassword = rcvrPassword;
+exports.changePassword = changePassword;
 exports.verifyregisteration = verifyregisteration
 exports.socialSign = socialSign
