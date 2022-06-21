@@ -7,6 +7,9 @@ const venueCtrl = require('./controllers/venues.js');
 const bridalCtrl = require('./controllers/bridal.js');
 const bridalwearCtrl = require('./controllers/bridalwear.js');
 const photographerCtrl = require('./controllers/photographerCtrl.js');
+const groomCtrl =  require('./controllers/groomCtrl.js');
+const mehndiCtrl = require('./controllers/mehndiCtrl.js')
+const plannerCtrl = require('./controllers/plannerCtrl.js')
 
 
 var storage = multer.diskStorage({
@@ -52,6 +55,24 @@ router.post('/photographer/create', upload.array('images'), photographerCtrl.cre
 router.post('/photographer-wears',  photographerCtrl.list );
 router.post('/photographer-wear/:id',  photographerCtrl.details );
 router.post('/photographer-wear/delete/:id',  photographerCtrl.delete );
+
+
+
+router.post('/groom/create', upload.array('images'), groomCtrl.create );
+router.post('/groom',  groomCtrl.list );
+router.post('/groom/:id',  groomCtrl.details );
+router.post('/groom/delete/:id',  groomCtrl.delete );
+
+
+router.post('/mehndi/create', upload.array('images'), mehndiCtrl.create );
+router.post('/mehndi',  mehndiCtrl.list );
+router.post('/mehndi/:id',  mehndiCtrl.details );
+router.post('/mehndi/delete/:id',  mehndiCtrl.delete );
+
+router.post('/planner/create', upload.array('images'), plannerCtrl.create );
+router.post('/planner',  plannerCtrl.list );
+router.post('/planner/:id',  plannerCtrl.details );
+router.post('/planner/delete/:id',  plannerCtrl.delete );
 
 
 
