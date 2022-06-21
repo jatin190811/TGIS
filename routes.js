@@ -1,7 +1,23 @@
 const express = require('express')
+const multer  = require('multer')
 const router = express.Router()
 
 const userCtrl = require('./controllers/user');
+const venueCtrl = require('./controllers/venues.js');
+const bridalCtrl = require('./controllers/bridal.js');
+const bridalwearCtrl = require('./controllers/bridalwear.js');
+const photographerCtrl = require('./controllers/photographerCtrl.js');
+
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './public')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+  })
+  var upload = multer({ storage: storage })
 
 
 // routes
@@ -11,8 +27,34 @@ router.post('/onboarding', userCtrl.onboarding );
 router.post('/verify-register', userCtrl.verifyregisteration );
 router.post('/verify-onboarding', userCtrl.verifyonboarding );
 router.post('/forget-password', userCtrl.frgtPassword );
+router.post('/change-password', userCtrl.changePassword );
 router.post('/recover-password', userCtrl.rcvrPassword );
 router.post('/social', userCtrl.socialSign );
+
+
+router.post('/venue/create', upload.array('images'), venueCtrl.create );
+router.post('/venues',  venueCtrl.list );
+router.post('/venue/:id',  venueCtrl.details );
+router.post('/venue/delete/:id',  venueCtrl.delete );
+
+
+router.post('/bridal-makeup/create', upload.array('images'), bridalCtrl.create );
+router.post('/bridal-makeups',  bridalCtrl.list );
+router.post('/bridal-makeup/:id',  bridalCtrl.details );
+router.post('/bridal-makeup/delete/:id',  bridalCtrl.delete );
+
+router.post('/bridal-wear/create', upload.array('images'), bridalwearCtrl.create );
+router.post('/bridal-wears',  bridalwearCtrl.list );
+router.post('/bridal-wear/:id',  bridalwearCtrl.details );
+router.post('/bridal-wear/delete/:id',  bridalwearCtrl.delete );
+
+router.post('/photographer/create', upload.array('images'), photographerCtrl.create );
+router.post('/photographer-wears',  photographerCtrl.list );
+router.post('/photographer-wear/:id',  photographerCtrl.details );
+router.post('/photographer-wear/delete/:id',  photographerCtrl.delete );
+
+
+
 
 
 module.exports = router

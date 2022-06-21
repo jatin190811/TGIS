@@ -24,6 +24,8 @@ var accessLogStream = fs.createWriteStream('access.log', {
   path: path.join(__dirname, 'log')
 })
 
+
+
 app.use(consoleLine);
 app.use(bodyParser.urlencoded({ extended: false })) 
 app.use(bodyParser.json())
@@ -31,7 +33,9 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(compression({ filter: shouldCompress }));  // enable compress
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/v1/',routes);  // using routing
 
 

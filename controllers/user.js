@@ -94,9 +94,9 @@ async function register(req, res) {
     let collection = await client.db("admin").collection('users');
 
 
-    let cursor = collection.find({ $or: [{ email: email }, { number: number }] })
+    let cursor = collection.find({ $and : [ { $or: [{ email: email }, { number: number }], active:true } ] })
     let user = await cursor.toArray()
-    if (user.length) {
+    if (user.length ) {
         return res.json({ status: 'error', error: '027', message: 'Email or Mobile Number already exist' })
     }
 
