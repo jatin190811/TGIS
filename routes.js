@@ -22,6 +22,7 @@ var storage = multer.diskStorage({
   })
   var upload = multer({ storage: storage })
 
+  
 
 // routes
 router.post('/login', userCtrl.login );
@@ -31,6 +32,11 @@ router.post('/verify-register', userCtrl.verifyregisteration );
 router.post('/verify-onboarding', userCtrl.verifyonboarding );
 router.post('/forget-password', userCtrl.frgtPassword );
 router.post('/change-password', userCtrl.changePassword );
+
+router.post('/update-profile', userCtrl.updateProfile );
+router.post('/update-password', userCtrl.updatePassword );
+
+
 router.post('/recover-password', userCtrl.rcvrPassword );
 router.post('/social', userCtrl.socialSign );
 

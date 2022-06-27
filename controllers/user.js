@@ -4,14 +4,14 @@ const jwt = require('jsonwebtoken');
 var ObjectId = require('mongodb').ObjectId;
 
 function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
- charactersLength));
-   }
-   return result;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() *
+            charactersLength));
+    }
+    return result;
 }
 
 
@@ -94,9 +94,9 @@ async function register(req, res) {
     let collection = await client.db("admin").collection('users');
 
 
-    let cursor = collection.find({ $and : [ { $or: [{ email: email }, { number: number }], active:true } ] })
+    let cursor = collection.find({ $and: [{ $or: [{ email: email }, { number: number }], active: true }] })
     let user = await cursor.toArray()
-    if (user.length ) {
+    if (user.length) {
         return res.json({ status: 'error', error: '027', message: 'Email or Mobile Number already exist' })
     }
 
@@ -114,56 +114,47 @@ async function register(req, res) {
 }
 
 
-async function onboarding(req, res) {
-    let brandName, city, vendorType, email, number, password
-    if (!req.body.brandName) {
-        return res.json({ status: 'error', error: '010', message: 'Brand name not found' })
+async function updateProfile(req, res) {
+    let name, email
+
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
     } else {
-        brandName = String(req.body.brandName).toLowerCase().trim()
+        token = token
     }
 
-    if (!req.body.city) {
-        return res.json({ status: 'error', error: '011', message: 'City not found' })
+    if (!req.body.name) {
+        return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
-        city = String(req.body.city).toLowerCase().trim()
-    }
-
-    if (!req.body.vendorType) {
-        return res.json({ status: 'error', error: '012', message: 'Vendor Type not found' })
-    } else {
-        vendorType = String(req.body.vendorType).toLowerCase().trim()
+        name = String(req.body.name).toLowerCase().trim()
     }
 
     if (!req.body.email) {
-        return res.json({ status: 'error', error: '013', message: 'Email not found' })
+        return res.json({ status: 'error', error: '007', message: 'number not found' })
     } else {
         email = String(req.body.email).toLowerCase().trim()
     }
 
-    if (!req.body.number) {
-        return res.json({ status: 'error', error: '014', message: 'Number not found' })
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+
+    if(user.length) {
+       let result =  await collection.updateOne({ token },{ $set : {
+            name ,
+            email,
+        }});
+        console.log(result)
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Profile Updated Successfully', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+        }
+
     } else {
-        number = String(req.body.number).toLowerCase().trim()
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
     }
-
-    if (!req.body.password) {
-        return res.json({ status: 'error', error: '015', message: 'Pasword not found' })
-    } else {
-        password = String(req.body.password).trim()
-    }
-
-    let otp = 222222 // Math.floor(100000 + Math.random() * 900000) ;  
-    otp = String(otp)
-
-    await client.connect();
-    let collection = await client.db("admin").collection('vendors');
-    let result = await collection.insertOne({ brandName, city, vendorType, email, number, password, otp, active: false })
-    if (result.acknowledged) {
-        return res.json({ status: 'success', message: 'OTP has been sent on your email and phone number', data: { ref: result.insertedId } })
-    } else {
-        return res.json({ status: 'error', error: '016', message: 'Something went wrong' })
-    }
-
 }
 
 
@@ -229,9 +220,9 @@ async function rcvrPassword(req, res) {
     }
     let nref = makeid(14)
     console.log(nref)
-    let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { forgetPasswordOtp: otp }] }, { $set: { ref : nref  } })
+    let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { forgetPasswordOtp: otp }] }, { $set: { ref: nref } })
     if (result.modifiedCount) {
-        return res.json({ status: 'success', message: 'Otp Successfully matched', data: { ref: nref} })
+        return res.json({ status: 'success', message: 'Otp Successfully matched', data: { ref: nref } })
     } else {
         return res.json({ status: 'error', error: '023', message: 'Invalid Otp' })
     }
@@ -262,8 +253,8 @@ async function changePassword(req, res) {
     } else if (req.body.type == 'vendor') {
         collection = await client.db("admin").collection('vendors');
     }
-   
-    let result = await collection.updateOne({ $and: [{ ref:ref }] }, { $set: { password : password  } })
+
+    let result = await collection.updateOne({ $and: [{ ref: ref }] }, { $set: { password: password } })
     if (result.modifiedCount) {
         return res.json({ status: 'success', message: 'Password Successfully changed', data: {} })
     } else {
@@ -323,7 +314,7 @@ async function verifyregisteration(req, res) {
             if (!user[0].active) {
                 return res.json({ status: 'error', error: '003', message: 'User Not Active' })
             }
-    
+
             let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
             let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
             if (result.modifiedCount) {
@@ -335,11 +326,11 @@ async function verifyregisteration(req, res) {
             } else {
                 return res.json({ status: 'error', error: '003', message: 'Something went wrong' })
             }
-    
+
         } else {
             return res.json({ status: 'error', error: '004', message: 'Incorrect username or password' })
         }
-    
+
     } else {
         return res.json({ status: 'error', error: '026', message: 'Invalid Otp' })
     }
@@ -348,8 +339,8 @@ async function verifyregisteration(req, res) {
 
 
 async function socialSign(req, res) {
-    let name, email, socialId, token , type
-    
+    let name, email, socialId, token, type
+
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
@@ -386,7 +377,7 @@ async function socialSign(req, res) {
     let cursor = collection.find({ $or: [{ email: email }] })
     let user = await cursor.toArray()
     if (!user.length) {
-        await collection.insertOne({ name, email,  socialId, type,  socialId, socialtoken: token, active: true })
+        await collection.insertOne({ name, email, socialId, type, socialId, socialtoken: token, active: true })
         cursor = collection.find({ email: email })
         user = await cursor.toArray()
     }
@@ -407,9 +398,122 @@ async function socialSign(req, res) {
 
 
 
+async function onboarding(req, res) {
+    let personal, city, date, budget
+
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
+
+    if (!req.body.personal) {
+        return res.json({ status: 'error', error: '011', message: 'Person Type not found' })
+    } else {
+        personal = String(req.body.personal).toLowerCase().trim()
+    }
+
+    if (!req.body.city) {
+        return res.json({ status: 'error', error: '012', message: 'City not found' })
+    } else {
+        city = String(req.body.city).toLowerCase().trim()
+    }
+
+    if (!req.body.date) {
+        return res.json({ status: 'error', error: '013', message: 'Date not found' })
+    } else {
+        date = String(req.body.date).toLowerCase().trim()
+    }
+
+    if (!req.body.budget) {
+        return res.json({ status: 'error', error: '014', message: 'Budget not found' })
+    } else {
+        budget = String(req.body.budget).toLowerCase().trim()
+    }
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+
+    if(user.length) {
+       let result =   await collection.updateOne({ token },{ $set : {
+            personType : personal,
+            weddingDate : date,
+            city,
+            budget
+        }});
+
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Data Saved Successfully', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+        }
+
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+
+
+}
+
+
+async function updatePassword(req, res) {
+    let oldpassword, newpassword ;
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
+
+    if (!req.body.oldpassword) {
+        return res.json({ status: 'error', error: '011', message: 'Old Password not found' })
+    } else {
+        oldpassword = String(req.body.oldpassword).toLowerCase().trim()
+    }
+
+    if (!req.body.newpassword) {
+        return res.json({ status: 'error', error: '012', message: 'New Password not found' })
+    } else {
+        city = String(req.body.city).toLowerCase().trim()
+    }
+
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+
+    if(user.length) {
+        
+        if(user[0]['password'] != oldpassword) {
+            return res.json({ status: 'error', error: '018', message: 'Invalid Old Password' })
+        }
+        
+       let result =  await  collection.updateOne({ token },{ $set : {
+            password : newpassword,
+        }});
+
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Password Successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+        }
+
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+
+
+}
+
+
+
 exports.login = login;
 exports.register = register;
 exports.onboarding = onboarding;
+exports.updateProfile = updateProfile;
+exports.updatePassword = updatePassword;
 exports.verifyonboarding = verifyonboarding
 exports.frgtPassword = frgtPassword;
 exports.rcvrPassword = rcvrPassword;

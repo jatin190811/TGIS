@@ -1,0 +1,2 @@
+127.0.0.1 - - [27/Jun/2022:11:33:51 +0000] "POST /api/v1/update-profile HTTP/1.1" 200 71 "-" "PostmanRuntime/7.28.4"
+127.0.0.1 - - [27/Jun/2022:11:34:25 +0000] "POST /api/v1/update-password HTTP/1.1" 200 72 "-" "PostmanRuntime/7.28.4"
