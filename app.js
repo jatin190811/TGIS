@@ -42,6 +42,6 @@ app.use('/api/v1/',routes);  // using routing
 //Server Start
 app.listen(
     process.env.PORT || config.server.port,
-    config.server.host || '0.0.0.0', 
+     '0.0.0.0', 
     () => console.log(`Server Started on ${ (config.server.host ? config.server.host : '0.0.0.0') }:${ process.env.PORT ? process.env.PORT : config.server.port }`)
 )

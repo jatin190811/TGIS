@@ -509,6 +509,36 @@ async function updatePassword(req, res) {
 
 
 
+async function profile(req, res) {
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
+
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+
+    if(user.length) {
+        let resp = JSON.parse(JSON.stringify(user[0]))      
+        delete resp['password']
+        delete resp['token']
+        delete resp['ref']
+        delete resp['forgetPasswordOtp']
+        
+        return res.json({ status: 'success', message: 'profile Successfully fetched', data: resp })
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+}
+
+
+
+
+
 exports.login = login;
 exports.register = register;
 exports.onboarding = onboarding;
@@ -518,5 +548,6 @@ exports.verifyonboarding = verifyonboarding
 exports.frgtPassword = frgtPassword;
 exports.rcvrPassword = rcvrPassword;
 exports.changePassword = changePassword;
+exports.profile = profile;
 exports.verifyregisteration = verifyregisteration
 exports.socialSign = socialSign

@@ -39,6 +39,7 @@ router.post('/update-password', userCtrl.updatePassword );
 
 router.post('/recover-password', userCtrl.rcvrPassword );
 router.post('/social', userCtrl.socialSign );
+router.post('/profile', userCtrl.profile );
 
 
 router.post('/venue/create', upload.array('images'), venueCtrl.create );
