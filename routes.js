@@ -20,7 +20,7 @@ var storage = multer.diskStorage({
       cb(null, file.originalname)
     }
   })
-  var upload = multer({ storage: storage })
+var upload = multer({ storage: storage })
 
   
 
@@ -40,6 +40,8 @@ router.post('/update-password', userCtrl.updatePassword );
 router.post('/recover-password', userCtrl.rcvrPassword );
 router.post('/social', userCtrl.socialSign );
 router.post('/profile', userCtrl.profile );
+router.post('/user/pic', upload.array('userPic'), userCtrl.profilePic );
+
 
 
 router.post('/venue/create', upload.array('images'), venueCtrl.create );

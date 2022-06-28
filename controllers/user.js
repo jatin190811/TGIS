@@ -2,6 +2,8 @@ const express = require('express');
 const client = require('../config/database')
 const jwt = require('jsonwebtoken');
 var ObjectId = require('mongodb').ObjectId;
+const fs = require('fs');
+
 
 function makeid(length) {
     var result = '';
@@ -537,6 +539,53 @@ async function profile(req, res) {
 
 
 
+async function profilePic(req, res) {
+    let profilePicArr;
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
+
+    if (req.files && req.files.length) {
+        profilePicArr = req.files.map(i => {
+            const newName = makeid(14) + "." + i.filename.split('.').pop()
+            const nameArr = String(i.path).split('/');
+            nameArr.pop()
+            nameArr.push(newName)
+            const newPath = nameArr.join('/')
+            fs.renameSync(i.path, newPath)
+            return newPath
+        })
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+    let profilePic = profilePicArr[0];
+
+    if(user.length) {
+        
+        let result =  await  collection.updateOne({ token },{ $set : {
+            profilePic : profilePic,
+        }});
+
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Profile Pic Successfully Updated', data: {
+                profilePic : profilePic.replace('public','')
+            } })
+        } else {
+            return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+        }
+  
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+}
+
 
 
 exports.login = login;
@@ -551,3 +600,4 @@ exports.changePassword = changePassword;
 exports.profile = profile;
 exports.verifyregisteration = verifyregisteration
 exports.socialSign = socialSign
+exports.profilePic = profilePic
