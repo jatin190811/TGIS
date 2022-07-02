@@ -11,6 +11,9 @@ const groomCtrl =  require('./controllers/groomCtrl.js');
 const mehndiCtrl = require('./controllers/mehndiCtrl.js')
 const plannerCtrl = require('./controllers/plannerCtrl.js')
 
+const blogCtrl = require('./controllers/blogCtrl.js')
+
+
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -83,6 +86,9 @@ router.post('/planner',  plannerCtrl.list );
 router.post('/planner/:id',  plannerCtrl.details );
 router.post('/planner/delete/:id',  plannerCtrl.delete );
 
+
+router.get('/blogs',  blogCtrl.list );
+router.get('/blog/:id',  blogCtrl.details );
 
 
 
