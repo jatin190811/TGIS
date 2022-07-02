@@ -12,6 +12,9 @@ const mehndiCtrl = require('./controllers/mehndiCtrl.js')
 const plannerCtrl = require('./controllers/plannerCtrl.js')
 
 const blogCtrl = require('./controllers/blogCtrl.js')
+const catsCtrl = require('./controllers/catsCtrl.js')
+const inhouseCtrl = require('./controllers/inhouseCtrl.js')
+
 
 
 
@@ -89,6 +92,10 @@ router.post('/planner/delete/:id',  plannerCtrl.delete );
 
 router.get('/blogs',  blogCtrl.list );
 router.get('/blog/:id',  blogCtrl.details );
+
+
+router.get('/categories',  catsCtrl.list );
+router.get('/inhouse',  inhouseCtrl.list );
 
 
 
