@@ -65,13 +65,20 @@ async function createVenue(req, res) {
         lat = String(req.body.lat)
     }
 
+    if (!req.body.execuisite) {
+        execuisite = false
+    } else {
+        execuisite = Boolean(execuisite)
+    }
+
+
     if (!req.body.lon) {
         return res.json({ status: 'error', error: '006', message: 'Longitude not found' })
     } else {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, tags, type, address, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, execuisite, tags, type, address, lat, lon, createTime: Date.now(), isDeleted : false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Venue successfully created', data: {} })
     } else {

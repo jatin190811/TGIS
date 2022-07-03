@@ -14,7 +14,7 @@ const plannerCtrl = require('./controllers/plannerCtrl.js')
 const blogCtrl = require('./controllers/blogCtrl.js')
 const catsCtrl = require('./controllers/catsCtrl.js')
 const inhouseCtrl = require('./controllers/inhouseCtrl.js')
-
+const vendorCtrl = require('./controllers/vendorCtrl.js')
 
 
 
@@ -97,6 +97,7 @@ router.get('/blog/:id',  blogCtrl.details );
 router.get('/categories',  catsCtrl.list );
 router.get('/inhouse',  inhouseCtrl.list );
 
+router.get('/vendors',  vendorCtrl.list );
 
 
 
