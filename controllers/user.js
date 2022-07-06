@@ -50,9 +50,17 @@ async function login(req, res) {
         let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
         let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
         if (result.modifiedCount) {
+            if(user[0]['personal'] && user[0]['budget']) {
+                isOnboarding : true
+            } else {
+                isOnboarding : false
+            }
+
             return res.json({
                 status: 'success', message: 'User Found', data: {
-                    token: token
+                    token: token,
+                    isOnboarding,
+                    profile: user[0]
                 }
             })
         } else {
@@ -107,7 +115,7 @@ async function register(req, res) {
 
     let result = await collection.insertOne({ name, email, number, password, otp, active: false })
     if (result.acknowledged) {
-        return res.json({ status: 'success', message: 'OTP sent to your mobile number and email', data: { ref: result.insertedId } })
+        return res.json({ status: 'success', message: 'OTP sent to your mobile number and email', data: { ref: result.insertedId, profile : { name, email, number, password, otp, active: false } } })
     } else {
         return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
     }
@@ -531,7 +539,14 @@ async function profile(req, res) {
         delete resp['ref']
         delete resp['forgetPasswordOtp']
         
-        return res.json({ status: 'success', message: 'profile Successfully fetched', data: resp })
+        if(resp['personal'] && resp['budget']) {
+            isOnboarding : true
+        } else {
+            isOnboarding : false
+        }
+
+
+        return res.json({ status: 'success', message: 'profile Successfully fetched', data: {...resp, isOnboarding} })
     } else {
         return res.json({ status: 'error', error: '014', message: 'Session Expired' })
     }
