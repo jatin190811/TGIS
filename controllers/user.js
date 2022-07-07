@@ -18,7 +18,7 @@ function makeid(length) {
 
 
 async function login(req, res) {
-    let username, password, type,isOnboarding
+    let username, password, type, onboarding
     if (!req.body.username) {
         return res.json({ status: 'error', error: '001', message: 'email or mobile number not found' })
     } else {
@@ -75,7 +75,7 @@ async function login(req, res) {
 
 
 async function register(req, res) {
-    let name, email, number, password, isOnboarding
+    let name, email, number, password
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
@@ -125,7 +125,7 @@ async function register(req, res) {
 
 
 async function updateProfile(req, res) {
-    let name, email, isOnboarding
+    let name, email
 
     let token = req.headers['x-access-token'];
     if (!token) {
@@ -520,7 +520,7 @@ async function updatePassword(req, res) {
 
 
 async function profile(req, res) {
-    let isOnboarding
+    let isOnboarding;
     let token = req.headers['x-access-token'];
     if (!token) {
         return res.json({ status: 'error', error: '010', message: 'Token not found' })
@@ -541,9 +541,9 @@ async function profile(req, res) {
         delete resp['forgetPasswordOtp']
         
         if(resp['personal'] && resp['budget']) {
-            isOnboarding : true
+            isOnboarding = true
         } else {
-            isOnboarding : false
+            isOnboarding = false
         }
 
 
