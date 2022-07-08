@@ -15,6 +15,7 @@ const blogCtrl = require('./controllers/blogCtrl.js')
 const catsCtrl = require('./controllers/catsCtrl.js')
 const inhouseCtrl = require('./controllers/inhouseCtrl.js')
 const vendorCtrl = require('./controllers/vendorCtrl.js')
+const testCtrl = require('./controllers/testimonialsCtrl.js')
 
 
 
@@ -93,12 +94,12 @@ router.post('/planner/delete/:id',  plannerCtrl.delete );
 router.get('/blogs',  blogCtrl.list );
 router.get('/blog/:id',  blogCtrl.details );
 
-
+router.get('/categories/popular', catsCtrl.popBlog)
 router.get('/categories',  catsCtrl.list );
 router.get('/inhouse',  inhouseCtrl.list );
 
 router.get('/vendors',  vendorCtrl.list );
 
-
+router.get('/testimonials', testCtrl.list)
 
 module.exports = router

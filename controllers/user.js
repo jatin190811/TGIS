@@ -18,7 +18,7 @@ function makeid(length) {
 
 
 async function login(req, res) {
-    let username, password, type, onboarding
+    let username, password, type, isOnboarding
     if (!req.body.username) {
         return res.json({ status: 'error', error: '001', message: 'email or mobile number not found' })
     } else {
@@ -50,10 +50,10 @@ async function login(req, res) {
         let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
         let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
         if (result.modifiedCount) {
-            if(user[0]['personal'] && user[0]['budget']) {
-                isOnboarding : true
+            if(user[0]['personType'] && user[0]['budget']) {
+                isOnboarding = true
             } else {
-                isOnboarding : false
+                isOnboarding = false
             }
 
             return res.json({
@@ -125,7 +125,7 @@ async function register(req, res) {
 
 
 async function updateProfile(req, res) {
-    let name, email
+    let name, email, number
 
     let token = req.headers['x-access-token'];
     if (!token) {
@@ -146,6 +146,13 @@ async function updateProfile(req, res) {
         email = String(req.body.email).toLowerCase().trim()
     }
 
+    if (!req.body.number) {
+        return res.json({ status: 'error', error: '007', message: 'number not found' })
+    } else {
+        number = String(req.body.number).toLowerCase().trim()
+    }
+
+
     let collection = await client.db("admin").collection('users');
     let cursor = collection.find({ token  })
     let user = await cursor.toArray();
@@ -154,8 +161,9 @@ async function updateProfile(req, res) {
        let result =  await collection.updateOne({ token },{ $set : {
             name ,
             email,
+            number
         }});
-        console.log(result)
+
         if (result.modifiedCount) {
             return res.json({ status: 'success', message: 'Profile Updated Successfully', data: {} })
         } else {
@@ -330,7 +338,9 @@ async function verifyregisteration(req, res) {
             if (result.modifiedCount) {
                 return res.json({
                     status: 'success', message: 'User Found', data: {
-                        token: token
+                        token: token,
+                        isOnboarding:false,
+                        profile: { ...user[0]}
                     }
                 })
             } else {
@@ -349,7 +359,7 @@ async function verifyregisteration(req, res) {
 
 
 async function socialSign(req, res) {
-    let name, email, socialId, token, type
+    let name, email, socialId, token, type, isOnboarding
 
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
@@ -387,7 +397,9 @@ async function socialSign(req, res) {
     let cursor = collection.find({ $or: [{ email: email }] })
     let user = await cursor.toArray()
     if (!user.length) {
-        await collection.insertOne({ name, email, socialId, type, socialId, socialtoken: token, active: true })
+        await collection.insertOne({ name, email, socialId, type, socialId, socialtoken: token, number:'', password: '', forgetPasswordOtp:'',
+        budget:'', city:'', personType:'',  weddingDate:'',
+        active: true })
         cursor = collection.find({ email: email })
         user = await cursor.toArray()
     }
@@ -395,9 +407,20 @@ async function socialSign(req, res) {
     let jwttoken = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
     let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: jwttoken } })
     if (result.modifiedCount) {
+
+
+        if(user[0]['personType'] && user[0]['budget']) {
+            isOnboarding = true
+        } else {
+            isOnboarding = false
+        }
+
+
         return res.json({
             status: 'success', message: 'User Found', data: {
-                token: jwttoken
+                token: jwttoken,
+                isOnboarding,
+                profile : {...user[0]}
             }
         })
     } else {
@@ -540,7 +563,7 @@ async function profile(req, res) {
         delete resp['ref']
         delete resp['forgetPasswordOtp']
         
-        if(resp['personal'] && resp['budget']) {
+        if(resp['personType'] && resp['budget']) {
             isOnboarding = true
         } else {
             isOnboarding = false
