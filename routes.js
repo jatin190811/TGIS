@@ -17,6 +17,8 @@ const inhouseCtrl = require('./controllers/inhouseCtrl.js')
 const vendorCtrl = require('./controllers/vendorCtrl.js')
 const testCtrl = require('./controllers/testimonialsCtrl.js')
 
+const likeCtrl = require('./controllers/likeCtrl.js')
+
 
 
 var storage = multer.diskStorage({
@@ -99,6 +101,16 @@ router.get('/categories',  catsCtrl.list );
 router.get('/inhouse',  inhouseCtrl.list );
 
 router.get('/vendors',  vendorCtrl.list );
+router.get('/videos',  vendorCtrl.videos );
+router.get('/images',  vendorCtrl.images );
+
+
+
+
+router.post('/like', likeCtrl.like );
+router.post('/unlike',  likeCtrl.unlike );
+router.post('/likelist',  likeCtrl.list );
+
 
 router.get('/testimonials', testCtrl.list)
 
