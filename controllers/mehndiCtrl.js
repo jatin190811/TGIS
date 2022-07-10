@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const client = require('../config/database')
+const filtersList = require('../filtersConst')
 var ObjectId = require('mongodb').ObjectId;
 
 function makeid(length) {
@@ -77,7 +78,7 @@ async function createMehndi(req, res) {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address,isVaccinated, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, isVaccinated, lat, lon, createTime: Date.now(), isDeleted: false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Mehndi  successfully created', data: {} })
     } else {
@@ -88,14 +89,26 @@ async function createMehndi(req, res) {
 
 
 async function listMehndi(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('mehndis');
-    
-    let cursor = collection.find({isDeleted : false})
+
+    let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
     if (mehndis) {
-            return res.json({ status: 'success', message: '', data: mehndis })
+        mehndis = mehndis.filter(i => {
+            let contains = false;
+            Object.keys(appliedFilters).forEach(filter => {
+                if (i.specifications && i.specifications[filter]) {
+                    appliedFilters[filter].includes(i.specifications[filter])
+                    contains = true
+                }
+
+
+            })
+            return contains
+        })
+        return res.json({ status: 'success', message: '', data: mehndis, filters: filtersList.mehndi })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi  found' })
     }
@@ -103,14 +116,14 @@ async function listMehndi(req, res) {
 }
 
 async function detailMehndi(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('mehndis');
     let id = req.params.id
-    let cursor = collection.find({_id : ObjectId(id)})
+    let cursor = collection.find({ _id: ObjectId(id) })
     let mehndis = await cursor.toArray()
     if (mehndis.length) {
-            return res.json({ status: 'success', message: '', data: mehndis[0] })
+        return res.json({ status: 'success', message: '', data: mehndis[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi found' })
     }
@@ -118,13 +131,13 @@ async function detailMehndi(req, res) {
 
 
 async function deleteMehndi(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('mehndis');
     let id = req.params.id
-    let cursor = collection.updateOne({_id : ObjectId(id)},{$set : { isDeleted : true }})
+    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
     if (cursor.modifiedCount) {
-            return res.json({ status: 'success', message: 'Mehndi successfully deleted', data: {} })
+        return res.json({ status: 'success', message: 'Mehndi successfully deleted', data: {} })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi found' })
     }

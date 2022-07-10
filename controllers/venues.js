@@ -1,7 +1,9 @@
 const express = require('express');
 const fs = require('fs');
 const client = require('../config/database')
+const filtersList = require('../filtersConst')
 var ObjectId = require('mongodb').ObjectId;
+
 
 function makeid(length) {
     var result = '';
@@ -78,7 +80,7 @@ async function createVenue(req, res) {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, execuisite, tags, type, address, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, execuisite, tags, type, address, lat, lon, createTime: Date.now(), isDeleted: false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Venue successfully created', data: {} })
     } else {
@@ -89,14 +91,27 @@ async function createVenue(req, res) {
 
 
 async function listVenue(req, res) {
-    
+
     let token = req.headers['x-access-token'];
+    let appliedFilters = req.body.appliedFilters;
     let collection = await client.db("admin").collection('venues');
-    
-    let cursor = collection.find({isDeleted : false})
+    let cursor = collection.find({ isDeleted: false })
     let venues = await cursor.toArray()
     if (venues) {
-            return res.json({ status: 'success', message: '', data: venues })
+        venues = venues.filter(i => {
+            let contains = false;
+            Object.keys(appliedFilters).forEach(filter => {
+                if (i.specifications && i.specifications[filter]) {
+                    appliedFilters[filter].includes(i.specifications[filter])
+                    contains = true
+                }
+
+
+            })
+            return contains
+        })
+
+        return res.json({ status: 'success', message: '', data: venues, filters: filtersList.venues })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
     }
@@ -104,14 +119,14 @@ async function listVenue(req, res) {
 }
 
 async function detailVenue(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('venues');
     let id = req.params.id
-    let cursor = collection.find({_id : ObjectId(id)})
+    let cursor = collection.find({ _id: ObjectId(id) })
     let venues = await cursor.toArray()
     if (venues.length) {
-            return res.json({ status: 'success', message: '', data: venues[0] })
+        return res.json({ status: 'success', message: '', data: venues[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
     }
@@ -119,13 +134,13 @@ async function detailVenue(req, res) {
 
 
 async function deleteVenue(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('venues');
     let id = req.params.id
-    let cursor = collection.updateOne({_id : ObjectId(id)},{$set : { isDeleted : true }})
+    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
     if (cursor.modifiedCount) {
-            return res.json({ status: 'success', message: 'Vanue successfully deleted', data: {} })
+        return res.json({ status: 'success', message: 'Vanue successfully deleted', data: {} })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
     }

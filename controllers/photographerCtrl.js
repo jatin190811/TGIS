@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const client = require('../config/database')
+const filtersList = require('../filtersConst')
 var ObjectId = require('mongodb').ObjectId;
 
 function makeid(length) {
@@ -95,7 +96,20 @@ async function listPhotographer(req, res) {
     let cursor = collection.find({isDeleted : false})
     let photographers = await cursor.toArray()
     if (photographers) {
-            return res.json({ status: 'success', message: '', data: photographers })
+
+        photographers = photographers.filter(i => {
+            let contains = false;
+                Object.keys(appliedFilters).forEach(filter => {
+                if( i.specifications && i.specifications[filter]) {            
+                    appliedFilters[filter].includes(i.specifications[filter])
+                    contains = true
+                } 
+
+                
+            })
+            return contains
+        })
+            return res.json({ status: 'success', message: '', data: photographers, filters : filtersList.photographers })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer wear found' })
     }

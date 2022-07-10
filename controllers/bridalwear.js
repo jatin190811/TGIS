@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const client = require('../config/database')
+const filtersList = require('../filtersConst')
 var ObjectId = require('mongodb').ObjectId;
 
 function makeid(length) {
@@ -77,7 +78,7 @@ async function createBridal(req, res) {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted: false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Bridal wear successfully created', data: {} })
     } else {
@@ -88,14 +89,26 @@ async function createBridal(req, res) {
 
 
 async function listBridal(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('bridalwears');
-    
-    let cursor = collection.find({isDeleted : false})
+
+    let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
     if (bridals) {
-            return res.json({ status: 'success', message: '', data: bridals })
+        bridals = bridals.filter(i => {
+            let contains = false;
+            Object.keys(appliedFilters).forEach(filter => {
+                if (i.specifications && i.specifications[filter]) {
+                    appliedFilters[filter].includes(i.specifications[filter])
+                    contains = true
+                }
+
+
+            })
+            return contains
+        })
+        return res.json({ status: 'success', message: '', data: bridals, filters: filtersList.bridalWears })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal wear found' })
     }
@@ -103,14 +116,14 @@ async function listBridal(req, res) {
 }
 
 async function detailBridal(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('bridalwears');
     let id = req.params.id
-    let cursor = collection.find({_id : ObjectId(id)})
+    let cursor = collection.find({ _id: ObjectId(id) })
     let bridals = await cursor.toArray()
     if (bridals.length) {
-            return res.json({ status: 'success', message: '', data: bridals[0] })
+        return res.json({ status: 'success', message: '', data: bridals[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal found' })
     }
@@ -118,13 +131,13 @@ async function detailBridal(req, res) {
 
 
 async function deleteBridal(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('bridalwears');
     let id = req.params.id
-    let cursor = collection.updateOne({_id : ObjectId(id)},{$set : { isDeleted : true }})
+    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
     if (cursor.modifiedCount) {
-            return res.json({ status: 'success', message: 'Bridal successfully deleted', data: {} })
+        return res.json({ status: 'success', message: 'Bridal successfully deleted', data: {} })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal found' })
     }

@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const client = require('../config/database')
+const filtersList = require('../filtersConst')
 var ObjectId = require('mongodb').ObjectId;
 
 function makeid(length) {
@@ -77,7 +78,7 @@ async function createGroom(req, res) {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted: false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Groom wear successfully created', data: {} })
     } else {
@@ -88,14 +89,26 @@ async function createGroom(req, res) {
 
 
 async function listGroom(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');
-    
-    let cursor = collection.find({isDeleted : false})
+
+    let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
     if (grooms) {
-            return res.json({ status: 'success', message: '', data: grooms })
+        grooms = grooms.filter(i => {
+            let contains = false;
+            Object.keys(appliedFilters).forEach(filter => {
+                if (i.specifications && i.specifications[filter]) {
+                    appliedFilters[filter].includes(i.specifications[filter])
+                    contains = true
+                }
+
+
+            })
+            return contains
+        })
+        return res.json({ status: 'success', message: '', data: grooms, filters: filtersList.groomWear })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom wear found' })
     }
@@ -103,14 +116,14 @@ async function listGroom(req, res) {
 }
 
 async function detailGroom(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');
     let id = req.params.id
-    let cursor = collection.find({_id : ObjectId(id)})
+    let cursor = collection.find({ _id: ObjectId(id) })
     let grooms = await cursor.toArray()
     if (grooms.length) {
-            return res.json({ status: 'success', message: '', data: grooms[0] })
+        return res.json({ status: 'success', message: '', data: grooms[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom found' })
     }
@@ -118,13 +131,13 @@ async function detailGroom(req, res) {
 
 
 async function deleteGroom(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');
     let id = req.params.id
-    let cursor = collection.updateOne({_id : ObjectId(id)},{$set : { isDeleted : true }})
+    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
     if (cursor.modifiedCount) {
-            return res.json({ status: 'success', message: 'Groom successfully deleted', data: {} })
+        return res.json({ status: 'success', message: 'Groom successfully deleted', data: {} })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom found' })
     }
