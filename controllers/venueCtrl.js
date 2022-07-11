@@ -94,15 +94,23 @@ async function listVenue(req, res) {
 
     let token = req.headers['x-access-token'];
     let appliedFilters = req.body.appliedFilters || false;
+    let search = req.body.searchParam || false;
+
     let collection = await client.db("admin").collection('venues');
     let cursor = collection.find({ isDeleted: false })
     let venues = await cursor.toArray()
     if (venues) {
+        if (search) {
+            venues = venues.filter(i => {
+                return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
 
-        if(appliedFilters) {
+
+        if (appliedFilters) {
             venues = venues.filter(i => {
                 let contains = false;
-                
+
                 Object.keys(appliedFilters).forEach(filter => {
                     if (i.specifications && i.specifications[filter]) {
                         appliedFilters[filter].includes(i.specifications[filter])
@@ -110,7 +118,7 @@ async function listVenue(req, res) {
                     }
                 })
                 return contains
-            })    
+            })
         }
 
         return res.json({ status: 'success', message: '', data: venues, filters: filtersList.venues })

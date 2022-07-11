@@ -93,10 +93,16 @@ async function listPhotographer(req, res) {
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('photographers');
     let appliedFilters = req.body.appliedFilters;
-   
+    let search = req.body.searchParam || false;
+
     let cursor = collection.find({isDeleted : false})
     let photographers = await cursor.toArray()
     if (photographers) {
+        if (search) {
+            photographers = photographers.filter(i => {
+                return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
         if(appliedFilters) {
         photographers = photographers.filter(i => {
             let contains = false;

@@ -93,10 +93,17 @@ async function listPlanner(req, res) {
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('planners');
     let appliedFilters = req.body.appliedFilters;
-   
+    let search = req.body.searchParam || false;
+
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
     if (planners) {
+        if (search) {
+            planners = planners.filter(i => {
+                return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
+
         if(appliedFilters) {
         planners = planners.filter(i => {
             let contains = false;

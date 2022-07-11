@@ -93,10 +93,16 @@ async function listBridal(req, res) {
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('bridalwears');
     let appliedFilters = req.body.appliedFilters;
-   
+    let search = req.body.searchParam || false;
+
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
     if (bridals) {
+        if (search) {
+            bridals = bridals.filter(i => {
+                return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
         if(appliedFilters) {
         bridals = bridals.filter(i => {
             let contains = false;

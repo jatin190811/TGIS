@@ -93,11 +93,18 @@ async function listGroom(req, res) {
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');
     let appliedFilters = req.body.appliedFilters;
-   
+    let search = req.body.searchParam || false;
+
     let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
     if (grooms) {
+        if (search) {
+            grooms = grooms.filter(i => {
+                return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
         if(appliedFilters) {
+            
         grooms = grooms.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
