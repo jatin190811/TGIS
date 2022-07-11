@@ -3,7 +3,7 @@ const multer  = require('multer')
 const router = express.Router()
 
 const userCtrl = require('./controllers/user');
-const venueCtrl = require('./controllers/venues.js');
+const venueCtrl = require('./controllers/venueCtrl.js');
 const bridalCtrl = require('./controllers/bridal.js');
 const bridalwearCtrl = require('./controllers/bridalwear.js');
 const photographerCtrl = require('./controllers/photographerCtrl.js');
