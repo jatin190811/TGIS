@@ -94,6 +94,7 @@ async function listPlanner(req, res) {
     let collection = await client.db("admin").collection('planners');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
@@ -103,6 +104,14 @@ async function listPlanner(req, res) {
                 return String(i.name).match(search)  || String(i.address).match(search) 
             })
         }
+
+        if(type) {
+            planners = planners.filter(i => {
+                return i.type==type 
+            })
+        }
+
+        
 
         if(appliedFilters) {
         planners = planners.filter(i => {
@@ -118,7 +127,7 @@ async function listPlanner(req, res) {
             return contains
         })
     }
-        return res.json({ status: 'success', message: '', data: planners, filters: filtersList.planner })
+        return res.json({ status: 'success', message: planners.length + ' results found', data: planners, filters: filtersList.planner })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Planner  found' })
     }

@@ -94,6 +94,7 @@ async function listPhotographer(req, res) {
     let collection = await client.db("admin").collection('photographers');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let cursor = collection.find({isDeleted : false})
     let photographers = await cursor.toArray()
@@ -103,6 +104,14 @@ async function listPhotographer(req, res) {
                 return String(i.name).match(search)  || String(i.address).match(search) 
             })
         }
+
+        if(type) {
+            photographers = photographers.filter(i => {
+                return i.type==type 
+            })
+        }
+
+
         if(appliedFilters) {
         photographers = photographers.filter(i => {
             let contains = false;
@@ -117,7 +126,7 @@ async function listPhotographer(req, res) {
             return contains
         })
     }
-            return res.json({ status: 'success', message: '', data: photographers, filters : filtersList.photographers })
+            return res.json({ status: 'success', message: photographers.length + ' results found', data: photographers, filters : filtersList.photographers })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer wear found' })
     }

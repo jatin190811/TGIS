@@ -94,6 +94,7 @@ async function listMehndi(req, res) {
     let collection = await client.db("admin").collection('mehndis');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
@@ -103,6 +104,14 @@ async function listMehndi(req, res) {
                 return String(i.name).match(search)  || String(i.address).match(search) 
             })
         }
+
+        if(type) {
+            mehndis = mehndis.filter(i => {
+                return i.type==type 
+            })
+        }
+
+
         if(appliedFilters) {
         mehndis = mehndis.filter(i => {
             let contains = false;
@@ -117,7 +126,7 @@ async function listMehndi(req, res) {
             return contains
         })
     }
-        return res.json({ status: 'success', message: '', data: mehndis, filters: filtersList.mehndi })
+        return res.json({ status: 'success', message: mehndis.length + ' results found', data: mehndis, filters: filtersList.mehndi })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi  found' })
     }

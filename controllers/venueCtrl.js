@@ -95,6 +95,7 @@ async function listVenue(req, res) {
     let token = req.headers['x-access-token'];
     let appliedFilters = req.body.appliedFilters || false;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let collection = await client.db("admin").collection('venues');
     let cursor = collection.find({ isDeleted: false })
@@ -103,6 +104,12 @@ async function listVenue(req, res) {
         if (search) {
             venues = venues.filter(i => {
                 return String(i.name).match(search)  || String(i.address).match(search) 
+            })
+        }
+
+        if(type) {
+            venues = venues.filter(i => {
+                return i.type==type 
             })
         }
 
@@ -121,7 +128,7 @@ async function listVenue(req, res) {
             })
         }
 
-        return res.json({ status: 'success', message: '', data: venues, filters: filtersList.venues })
+        return res.json({ status: 'success', message: venues.length + ' results found', data: venues, filters: filtersList.venues })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
     }

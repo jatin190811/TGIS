@@ -94,6 +94,7 @@ async function listGroom(req, res) {
     let collection = await client.db("admin").collection('groomwears');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
@@ -103,6 +104,14 @@ async function listGroom(req, res) {
                 return String(i.name).match(search)  || String(i.address).match(search) 
             })
         }
+
+        if(type) {
+            grooms = grooms.filter(i => {
+                return i.type==type 
+            })
+        }
+
+
         if(appliedFilters) {
             
         grooms = grooms.filter(i => {
@@ -118,7 +127,7 @@ async function listGroom(req, res) {
             return contains
         })
     }
-        return res.json({ status: 'success', message: '', data: grooms, filters: filtersList.groomWear })
+        return res.json({ status: 'success', message: grooms.length + ' results found', data: grooms, filters: filtersList.groomWear })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom wear found' })
     }

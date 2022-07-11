@@ -94,6 +94,7 @@ async function listBridal(req, res) {
     let collection = await client.db("admin").collection('bridalwears');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
+    let type = req.body.sub_cat || false;
 
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
@@ -103,6 +104,14 @@ async function listBridal(req, res) {
                 return String(i.name).match(search)  || String(i.address).match(search) 
             })
         }
+
+        if(type) {
+            bridals = bridals.filter(i => {
+                return i.type==type 
+            })
+        }
+
+
         if(appliedFilters) {
         bridals = bridals.filter(i => {
             let contains = false;
@@ -117,7 +126,7 @@ async function listBridal(req, res) {
             return contains
         })
     }
-        return res.json({ status: 'success', message: '', data: bridals, filters: filtersList.bridalWears })
+        return res.json({ status: 'success', message: bridals.length + ' results found', data: bridals, filters: filtersList.bridalWears })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal wear found' })
     }
