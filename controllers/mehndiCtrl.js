@@ -97,6 +97,7 @@ async function listMehndi(req, res) {
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
     if (mehndis) {
+        if(appliedFilters) {
         mehndis = mehndis.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
@@ -109,6 +110,7 @@ async function listMehndi(req, res) {
             })
             return contains
         })
+    }
         return res.json({ status: 'success', message: '', data: mehndis, filters: filtersList.mehndi })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi  found' })

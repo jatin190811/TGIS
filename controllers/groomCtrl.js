@@ -97,6 +97,7 @@ async function listGroom(req, res) {
     let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
     if (grooms) {
+        if(appliedFilters) {
         grooms = grooms.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
@@ -109,6 +110,7 @@ async function listGroom(req, res) {
             })
             return contains
         })
+    }
         return res.json({ status: 'success', message: '', data: grooms, filters: filtersList.groomWear })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom wear found' })

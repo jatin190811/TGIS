@@ -97,7 +97,7 @@ async function listPlanner(req, res) {
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
     if (planners) {
-
+        if(appliedFilters) {
         planners = planners.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
@@ -110,6 +110,7 @@ async function listPlanner(req, res) {
             })
             return contains
         })
+    }
         return res.json({ status: 'success', message: '', data: planners, filters: filtersList.planner })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Planner  found' })

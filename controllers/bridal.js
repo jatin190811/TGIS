@@ -98,6 +98,7 @@ async function listBridal(req, res) {
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
     if (bridals) {
+        if(appliedFilters) {
         bridals = bridals.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
@@ -110,6 +111,7 @@ async function listBridal(req, res) {
             })
             return contains
         })
+    }
         return res.json({ status: 'success', message: '', data: bridals, filters: filtersList.bridalMakeups })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal found' })

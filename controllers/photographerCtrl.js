@@ -97,7 +97,7 @@ async function listPhotographer(req, res) {
     let cursor = collection.find({isDeleted : false})
     let photographers = await cursor.toArray()
     if (photographers) {
-
+        if(appliedFilters) {
         photographers = photographers.filter(i => {
             let contains = false;
                 Object.keys(appliedFilters).forEach(filter => {
@@ -110,6 +110,7 @@ async function listPhotographer(req, res) {
             })
             return contains
         })
+    }
             return res.json({ status: 'success', message: '', data: photographers, filters : filtersList.photographers })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer wear found' })
