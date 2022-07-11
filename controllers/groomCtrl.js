@@ -92,7 +92,8 @@ async function listGroom(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');
-
+    let appliedFilters = req.body.appliedFilters;
+   
     let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
     if (grooms) {

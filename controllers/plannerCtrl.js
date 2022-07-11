@@ -92,7 +92,8 @@ async function listPlanner(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('planners');
-
+    let appliedFilters = req.body.appliedFilters;
+   
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
     if (planners) {

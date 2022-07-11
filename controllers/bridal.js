@@ -93,7 +93,8 @@ async function listBridal(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('bridals');
-
+    let appliedFilters = req.body.appliedFilters;
+   
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
     if (bridals) {

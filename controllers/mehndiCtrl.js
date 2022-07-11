@@ -92,7 +92,8 @@ async function listMehndi(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('mehndis');
-
+    let appliedFilters = req.body.appliedFilters;
+   
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
     if (mehndis) {

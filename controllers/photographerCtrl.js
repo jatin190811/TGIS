@@ -92,7 +92,8 @@ async function listPhotographer(req, res) {
     
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('photographers');
-    
+    let appliedFilters = req.body.appliedFilters;
+   
     let cursor = collection.find({isDeleted : false})
     let photographers = await cursor.toArray()
     if (photographers) {
