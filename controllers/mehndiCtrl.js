@@ -101,7 +101,7 @@ async function listMehndi(req, res) {
     if (mehndis) {
         if (search) {
             mehndis = mehndis.filter(i => {
-                return String(i.name).match(search)  || String(i.address).match(search) 
+                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 

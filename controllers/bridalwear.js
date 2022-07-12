@@ -101,7 +101,7 @@ async function listBridal(req, res) {
     if (bridals) {
         if (search) {
             bridals = bridals.filter(i => {
-                return String(i.name).match(search)  || String(i.address).match(search) 
+                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 

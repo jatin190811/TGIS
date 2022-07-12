@@ -101,7 +101,7 @@ async function listPhotographer(req, res) {
     if (photographers) {
         if (search) {
             photographers = photographers.filter(i => {
-                return String(i.name).match(search)  || String(i.address).match(search) 
+                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 
