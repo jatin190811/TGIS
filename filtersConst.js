@@ -32,7 +32,6 @@ module.exports = {
     },
 
     bridalMakeups : {
-        sub_cat : ['Kanjeevaram Sarees','Silk Sarees','Bridal Lehengas','Resort','Cocktail Gowns'],
         pricePerEvent : [
             'Less Than 12K',
             '12k-16k',
@@ -68,7 +67,7 @@ module.exports = {
     },
 
     bridalWears : {
-        city : '',
+        sub_cat : ['Kanjeevaram Sarees','Silk Sarees','Bridal Lehengas','Resort','Cocktail Gowns'],
         pricePerEvent : [
             'Less Than 12K',
             '12k-16k',
