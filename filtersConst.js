@@ -1,6 +1,6 @@
 module.exports = {
     venues : {
-        city : '',
+        sub_cat : ['Banquet','Lawn','Farm House','Resort','Pary Hall'],
         noOfGuests : [
             'Less than 100',
             '100-250',
@@ -32,7 +32,7 @@ module.exports = {
     },
 
     bridalMakeups : {
-        city : '',
+        sub_cat : ['Kanjeevaram Sarees','Silk Sarees','Bridal Lehengas','Resort','Cocktail Gowns'],
         pricePerEvent : [
             'Less Than 12K',
             '12k-16k',
@@ -187,7 +187,7 @@ module.exports = {
     },
 
     planner : {
-        city : '',
+        sub_cat: ['Wedding Planners', 'Decorations'],
         price :[
             'Less Than 12K',
             '12k-16k',
