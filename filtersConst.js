@@ -48,12 +48,12 @@ module.exports = {
             'Punjabi'
         ],
         travelToVenue: [
-            'Travel to Vanue',
-            'Does\'nt travel to venue' 
+            'Travel to Venue',
+            'Does\'nt travel' 
         ],
         airbrudh : [
             'Offers HD',
-            'Offers airbrush & HD'
+            'Offers airbrush'
         ],
         ratings :[
             'all ratings',
