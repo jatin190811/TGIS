@@ -8,7 +8,7 @@ module.exports = {
             '500-1000',
             'More than 1000'
         ],
-        vanueType :[
+        venueType :[
             '4 star & above',
             'Banquet Hall',
             'Farmhouse',
