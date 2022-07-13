@@ -1,6 +1,7 @@
 module.exports = {
     venues : {
         sub_cat : ['Banquet','Lawn','Farm House','Resort','Pary Hall'],
+        city : "",
         filters: {
             noOfGuests : [
                 'Less than 100',
@@ -35,6 +36,8 @@ module.exports = {
     },
 
     bridalMakeups : {
+        sub_cat : ['Bridal Makeup','Family Makeup'],
+        city : "",
         filters : {
             pricePerEvent : [
                 'Less Than 12K',
@@ -73,6 +76,7 @@ module.exports = {
 
     bridalWears : {
         sub_cat : ['Kanjeevaram Sarees','Silk Sarees','Bridal Lehengas','Resort','Cocktail Gowns'],
+        city : "",
         filters : {
             pricePerEvent : [
                 'Less Than 12K',
@@ -108,6 +112,8 @@ module.exports = {
     },
 
     photographers : {
+        sub_cat : ['Cinema/Video','Pre Wedding Shoot'],
+        city : "",
         filters: {noOfDays : [
             '1 day',
             '2 days',
@@ -139,6 +145,8 @@ module.exports = {
     },
 
     groomWear  : {
+        sub_cat : ['Shervani','Wedding Suits/Tuxes', 'Sherwani On Rent'],
+        city : "",
         filters : {
             outfitType :[
                 'sherwani',
@@ -171,6 +179,8 @@ module.exports = {
     },
 
     mehndi : {
+        sub_cat : ['Mehndi Artist'],
+        city : "",
         filters : {
             price :[
                 'Less than 5000',
@@ -194,6 +204,7 @@ module.exports = {
 
     planner : {
         sub_cat: ['Wedding Planners', 'Decorations'],
+        city : "",
         filters : {
             price :[
                 'Less Than 12K',
