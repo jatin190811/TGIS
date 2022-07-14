@@ -141,6 +141,13 @@ async function detailMehndi(req, res) {
     let cursor = collection.find({ _id: ObjectId(id) })
     let mehndis = await cursor.toArray()
     if (mehndis.length) {
+
+        cursor = collection.find({tags : {$in :mehndis[0]['tags'] }}).limit(3)
+        let relatedObjects = await cursor.toArray();
+        mehndis[0]['relatedObjects'] = relatedObjects;
+
+
+
         return res.json({ status: 'success', message: '', data: mehndis[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi found' })

@@ -78,7 +78,7 @@ async function createPhotographer(req, res) {
         lon = String(req.body.lon)
     }
 
-    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted : false })
+    let result = await collection.insertOne({ name, images, tags, minprice, maxprice, address, lat, lon, createTime: Date.now(), isDeleted: false })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Photographer wear successfully created', data: {} })
     } else {
@@ -89,44 +89,44 @@ async function createPhotographer(req, res) {
 
 
 async function listPhotographer(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('photographers');
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
 
-    let cursor = collection.find({isDeleted : false})
+    let cursor = collection.find({ isDeleted: false })
     let photographers = await cursor.toArray()
     if (photographers) {
         if (search) {
             photographers = photographers.filter(i => {
-                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
+                return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 
-        if(type) {
+        if (type) {
             photographers = photographers.filter(i => {
-                return i.type==type 
+                return i.type == type
             })
         }
 
 
-        if(appliedFilters) {
-        photographers = photographers.filter(i => {
-            let contains = false;
+        if (appliedFilters) {
+            photographers = photographers.filter(i => {
+                let contains = false;
                 Object.keys(appliedFilters).forEach(filter => {
-                if( i.specifications && i.specifications[filter]) {            
-                    appliedFilters[filter].includes(i.specifications[filter])
-                    contains = true
-                } 
+                    if (i.specifications && i.specifications[filter]) {
+                        appliedFilters[filter].includes(i.specifications[filter])
+                        contains = true
+                    }
 
-                
+
+                })
+                return contains
             })
-            return contains
-        })
-    }
-            return res.json({ status: 'success', message: photographers.length + ' results found', data: photographers, filters : filtersList.photographers })
+        }
+        return res.json({ status: 'success', message: photographers.length + ' results found', data: photographers, filters: filtersList.photographers })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer wear found' })
     }
@@ -134,14 +134,19 @@ async function listPhotographer(req, res) {
 }
 
 async function detailPhotographer(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('photographers');
     let id = req.params.id
-    let cursor = collection.find({_id : ObjectId(id)})
+    let cursor = collection.find({ _id: ObjectId(id) })
     let photographers = await cursor.toArray()
     if (photographers.length) {
-            return res.json({ status: 'success', message: '', data: photographers[0] })
+
+        cursor = collection.find({ tags: { $in: photographers[0]['tags'] } }).limit(3)
+        let relatedObjects = await cursor.toArray();
+        photographers[0]['relatedObjects'] = relatedObjects;
+
+        return res.json({ status: 'success', message: '', data: photographers[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer found' })
     }
@@ -149,13 +154,13 @@ async function detailPhotographer(req, res) {
 
 
 async function deletePhotographer(req, res) {
-    
+
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('photographers');
     let id = req.params.id
-    let cursor = collection.updateOne({_id : ObjectId(id)},{$set : { isDeleted : true }})
+    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
     if (cursor.modifiedCount) {
-            return res.json({ status: 'success', message: 'Photographer successfully deleted', data: {} })
+        return res.json({ status: 'success', message: 'Photographer successfully deleted', data: {} })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Photographer found' })
     }

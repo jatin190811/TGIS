@@ -16,7 +16,7 @@ const catsCtrl = require('./controllers/catsCtrl.js')
 const inhouseCtrl = require('./controllers/inhouseCtrl.js')
 const vendorCtrl = require('./controllers/vendorCtrl.js')
 const testCtrl = require('./controllers/testimonialsCtrl.js')
-
+const contactCtrl = require('./controllers/contactCtrl.js')
 const likeCtrl = require('./controllers/likeCtrl.js')
 
 
@@ -106,5 +106,8 @@ router.post('/likelist',  likeCtrl.list );
 
 
 router.get('/testimonials', testCtrl.list)
+router.post('/contact-us', contactCtrl.doContact)
+
+
 
 module.exports = router

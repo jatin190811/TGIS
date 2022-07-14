@@ -142,6 +142,15 @@ async function detailBridal(req, res) {
     let cursor = collection.find({ _id: ObjectId(id) })
     let bridals = await cursor.toArray()
     if (bridals.length) {
+
+
+        cursor = collection.find({tags : {$in :bridals[0]['tags'] }}).limit(3)
+        let relatedObjects = await cursor.toArray();
+        bridals[0]['relatedObjects'] = relatedObjects;
+
+
+
+
         return res.json({ status: 'success', message: '', data: bridals[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Bridal found' })

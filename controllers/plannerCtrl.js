@@ -142,6 +142,13 @@ async function detailPlanner(req, res) {
     let cursor = collection.find({ _id: ObjectId(id) })
     let planners = await cursor.toArray()
     if (planners.length) {
+
+
+        cursor = collection.find({tags : {$in :planners[0]['tags'] }}).limit(3)
+        let relatedObjects = await cursor.toArray();
+        planners[0]['relatedObjects'] = relatedObjects;
+
+
         return res.json({ status: 'success', message: '', data: planners[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Planner found' })

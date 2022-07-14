@@ -143,6 +143,16 @@ async function detailVenue(req, res) {
     let cursor = collection.find({ _id: ObjectId(id) })
     let venues = await cursor.toArray()
     if (venues.length) {
+
+
+        cursor = collection.find({tags : {$in :venues[0]['tags'] }}).limit(3)
+        let relatedObjects = await cursor.toArray();
+        console.log(venues[0]['tags'])
+        venues[0]['relatedObjects'] = relatedObjects;
+
+
+
+
         return res.json({ status: 'success', message: '', data: venues[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Venue found' })

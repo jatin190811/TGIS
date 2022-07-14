@@ -142,6 +142,11 @@ async function detailGroom(req, res) {
     let cursor = collection.find({ _id: ObjectId(id) })
     let grooms = await cursor.toArray()
     if (grooms.length) {
+        cursor = collection.find({tags : {$in :grooms[0]['tags'] }}).limit(3)
+        let relatedObjects = await cursor.toArray();
+        grooms[0]['relatedObjects'] = relatedObjects;
+
+
         return res.json({ status: 'success', message: '', data: grooms[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom found' })
