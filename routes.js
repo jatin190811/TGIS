@@ -108,6 +108,7 @@ router.post('/likelist',  likeCtrl.list );
 router.get('/testimonials', testCtrl.list)
 router.post('/contact-us', contactCtrl.doContact)
 
+router.post('/message-us', contactCtrl.doMessage)
 
 
 module.exports = router

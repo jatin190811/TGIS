@@ -125,7 +125,7 @@ async function list(req,res) {
             console.log(collectionIn)
             let cursorIn = await collectionIn.find({ _id: ObjectId(likes[i]['pid']) })
             let obj = await cursorIn.toArray();
-            likedObj.push({...obj[0], type : likes[i]['type'] } );
+            likedObj.push({...obj[0], type : likes[i]['likeType'] } );
         }
 
         return res.json({ status: 'success', message: '', data: likedObj })

@@ -47,5 +47,50 @@ async function doContact(req, res) {
 
 
 
+
+
+
+async function doMessage(req, res) {
+    let name, phone, email, message, metadata;
+
+
+    if (!req.body.name) {
+        return res.json({ status: 'error', error: '006', message: 'name not found' })
+    } else {
+        name = String(req.body.name).toLowerCase().trim()
+    }
+
+    if (!req.body.email) {
+        return res.json({ status: 'error', error: '006', message: 'email not found' })
+    } else {
+        email = String(req.body.email).toLowerCase().trim()
+    }
+
+    if (!req.body.phone) {
+        return res.json({ status: 'error', error: '006', message: 'phone number not found' })
+    } else {
+        phone = String(req.body.phone).toLowerCase().trim()
+    }
+
+    if (!req.body.message) {
+        return res.json({ status: 'error', error: '006', message: 'message not found' })
+    } else {
+        message = String(req.body.message).toLowerCase().trim()
+    }
+
+    if (!req.body.metadata) {
+        metadata = {}
+    } else {
+        metadata = req.body.metadata
+    }
+
+
+
+    return res.json({ status: 'success', message: 'Message successfully Sent', data: {} })
+
+}
+
+
 exports.doContact = doContact;
+exports.doMessage = doMessage;
 
