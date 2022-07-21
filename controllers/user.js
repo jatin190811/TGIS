@@ -46,6 +46,10 @@ async function login(req, res) {
         if (!user[0].active) {
             return res.json({ status: 'error', error: '003', message: 'User Not Active' })
         }
+        
+        if (user[0].isDeleted) {
+            return res.json({ status: 'error', error: '003', message: 'Incorrect username or password' })
+        }
 
         let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
         let result = await collection.updateOne({ '_id': user[0]['_id'] }, { $set: { token: token } })
@@ -70,7 +74,6 @@ async function login(req, res) {
     } else {
         return res.json({ status: 'error', error: '004', message: 'Incorrect username or password' })
     }
-
 }
 
 
@@ -627,6 +630,38 @@ async function profilePic(req, res) {
 
 
 
+
+async function deleteUser(req, res) {
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token  })
+    let user = await cursor.toArray();
+
+
+    if(user.length) {
+        
+        let result =  await  collection.updateOne({ token },{ $set : {
+            isDeleted : true,
+        }});
+
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'User removed Successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+        }
+  
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+}
+
+
 exports.login = login;
 exports.register = register;
 exports.onboarding = onboarding;
@@ -640,3 +675,4 @@ exports.profile = profile;
 exports.verifyregisteration = verifyregisteration
 exports.socialSign = socialSign
 exports.profilePic = profilePic
+exports.deleteUser = deleteUser

@@ -44,6 +44,7 @@ router.post('/change-password', userCtrl.changePassword );
 
 router.post('/update-profile', userCtrl.updateProfile );
 router.post('/update-password', userCtrl.updatePassword );
+router.post('/delete-user', userCtrl.deleteUser );
 
 
 router.post('/recover-password', userCtrl.rcvrPassword );
@@ -109,6 +110,7 @@ router.get('/testimonials', testCtrl.list)
 router.post('/contact-us', contactCtrl.doContact)
 
 router.post('/message-us', contactCtrl.doMessage)
+router.post('/search', vendorCtrl.searchVendors)
 
 
 module.exports = router
