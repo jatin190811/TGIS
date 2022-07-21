@@ -60,6 +60,25 @@ async function doMessage(req, res) {
         name = String(req.body.name).toLowerCase().trim()
     }
 
+    if (!req.body.vtype) {
+        return res.json({ status: 'error', error: '006', message: 'Vendor type not found' })
+    } else {
+        vtype = String(req.body.vtype).toLowerCase().trim()
+    }
+
+
+    if (!req.body.vid) {
+        return res.json({ status: 'error', error: '006', message: 'Vendor id not found' })
+    } else {
+        vid = req.body.vid
+    }
+
+    if (!req.body.name) {
+        return res.json({ status: 'error', error: '006', message: 'name not found' })
+    } else {
+        name = String(req.body.name).toLowerCase().trim()
+    }
+
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
