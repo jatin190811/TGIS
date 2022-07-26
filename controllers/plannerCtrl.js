@@ -120,7 +120,7 @@ async function listPlanner(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'planners' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'decor' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     planners[i]['liked'] = true
@@ -192,7 +192,7 @@ async function detailPlanner(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'planners' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'decor' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     planners[i]['liked'] = true

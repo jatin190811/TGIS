@@ -119,7 +119,7 @@ async function listPhotographer(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : photographers[i]['_id'], type:'photographers' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : photographers[i]['_id'], type:'photographer' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     photographers[i]['liked'] = true
@@ -190,7 +190,7 @@ async function detailPhotographer(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : photographers[i]['_id'], type:'photographers' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : photographers[i]['_id'], type:'photographer' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     photographers[i]['liked'] = true

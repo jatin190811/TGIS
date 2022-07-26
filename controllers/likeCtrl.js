@@ -43,8 +43,6 @@ async function like(req,res) {
     } else {
         return res.json({ status: 'error', error: '014', message: 'Session Expired' })
     }
-
-
 }
 
 
@@ -111,10 +109,10 @@ async function list(req,res) {
         let cursor = await collection.find({ uid: _id })
         let likes = await cursor.toArray();
         let likedObj = []
-           
+      
+      
         for(let i=0;i<likes.length;i++) {
             let collectionIn ;
-            
             if(likes[i]['type']=='venue') collectionIn  = await client.db("admin").collection('venues');
             if(likes[i]['type']=='bridal_makeup') collectionIn  = await client.db("admin").collection('bridals');
             if(likes[i]['type']=='bridal_wear') collectionIn  = await client.db("admin").collection('bridalwears');

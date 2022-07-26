@@ -120,7 +120,7 @@ async function listBridal(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridalwears' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridal_wear' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     bridals[i]['liked'] = true
@@ -192,7 +192,7 @@ async function detailBridal(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridalwears' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridal_wear' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     bridals[i]['liked'] = true

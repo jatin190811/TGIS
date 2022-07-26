@@ -119,7 +119,7 @@ async function listGroom(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groomwears' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groom_wears' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     grooms[i]['liked'] = true
@@ -189,7 +189,7 @@ async function detailGroom(req, res) {
         
             if(user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groomwears' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groom_wears' })
                 let likes = await cursor.toArray();
                 if(likes.length) {
                     grooms[i]['liked'] = true
