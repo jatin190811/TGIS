@@ -98,6 +98,43 @@ async function listMehndi(req, res) {
 
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
+
+    for (let i = 0; i < mehndis.length; i++) {
+
+        let collection = await client.db("admin").collection('reviews');
+        let cursor = await collection.find({ pid : mehndis[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating  = reviews.forEach((item)=>{
+            sum+= number(item.rating)
+        })
+        mehndis[i]['avgRating'] = totalRating/mehndis.length
+        if(!mehndis[i]['avgRating'])  mehndis[i]['avgRating'] = 0
+
+
+        if(token) {
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : mehndis[i]['_id'], type:'mehndis' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    mehndis[i]['liked'] = true
+                } else {
+                    mehndis[i]['liked'] = false
+                }
+            }
+        } else {
+            mehndis[i]['liked'] = false
+        }
+    }
+
+
+
+
     if (mehndis) {
         if (search) {
             mehndis = mehndis.filter(i => {
@@ -146,7 +183,25 @@ async function detailMehndi(req, res) {
         let relatedObjects = await cursor.toArray();
         mehndis[0]['relatedObjects'] = relatedObjects;
 
-
+        if(token) {
+            let i=0
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : mehndis[i]['_id'], type:'mehndis' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    mehndis[i]['liked'] = true
+                } else {
+                    mehndis[i]['liked'] = false
+                }
+            }
+        } else {
+            mehndis[i]['liked'] = false
+        }
 
         return res.json({ status: 'success', message: '', data: mehndis[0] })
     } else {

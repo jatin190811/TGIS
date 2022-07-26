@@ -98,6 +98,42 @@ async function listPlanner(req, res) {
 
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
+
+
+    for (let i = 0; i < planners.length; i++) {
+
+        let collection = await client.db("admin").collection('reviews');
+        let cursor = await collection.find({ pid : planners[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating  = reviews.forEach((item)=>{
+            sum+= number(item.rating)
+        })
+        planners[i]['avgRating'] = totalRating/planners.length
+        if(!planners[i]['avgRating'])  planners[i]['avgRating'] = 0
+
+
+        if(token) {
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'planners' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    planners[i]['liked'] = true
+                } else {
+                    planners[i]['liked'] = false
+                }
+            }
+        } else {
+            planners[i]['liked'] = false
+        }
+    }
+
+
     if (planners) {
         if (search) {
             planners = planners.filter(i => {
@@ -148,6 +184,25 @@ async function detailPlanner(req, res) {
         let relatedObjects = await cursor.toArray();
         planners[0]['relatedObjects'] = relatedObjects;
 
+        if(token) {
+            let i=0;
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'planners' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    planners[i]['liked'] = true
+                } else {
+                    planners[i]['liked'] = false
+                }
+            }
+        } else {
+            planners[i]['liked'] = false
+        }
 
         return res.json({ status: 'success', message: '', data: planners[0] })
     } else {

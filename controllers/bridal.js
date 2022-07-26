@@ -99,6 +99,43 @@ async function listBridal(req, res) {
 
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
+
+
+    for (let i = 0; i < bridals.length; i++) {
+
+        let collection = await client.db("admin").collection('reviews');
+        let cursor = await collection.find({ pid : bridals[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating  = reviews.forEach((item)=>{
+            sum+= number(item.rating)
+        })
+        bridals[i]['avgRating'] = totalRating/bridals.length
+        if(!bridals[i]['avgRating'])  bridals[i]['avgRating'] = 0
+
+
+        if(token) {
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridal_makeup' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    bridals[i]['liked'] = true
+                } else {
+                    bridals[i]['liked'] = false
+                }
+            }
+        } else {
+            bridals[i]['liked'] = false
+        }
+    }
+
+
+
     if (bridals) {
         if (search) {
             bridals = bridals.filter(i => {
@@ -148,7 +185,25 @@ async function detailBridal(req, res) {
         let relatedObjects = await cursor.toArray();
         bridals[0]['relatedObjects'] = relatedObjects;
 
-
+        if(token) {
+            let i= 0;
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : bridals[i]['_id'], type:'bridal_makeup' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    bridals[i]['liked'] = true
+                } else {
+                    bridals[i]['liked'] = false
+                }
+            }
+        } else {
+            bridals[i]['liked'] = false
+        }
 
 
         return res.json({ status: 'success', message: '', data: bridals[0] })

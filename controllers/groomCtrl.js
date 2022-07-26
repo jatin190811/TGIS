@@ -98,6 +98,41 @@ async function listGroom(req, res) {
 
     let cursor = collection.find({ isDeleted: false })
     let grooms = await cursor.toArray()
+
+    for (let i = 0; i < grooms.length; i++) {
+
+        let collection = await client.db("admin").collection('reviews');
+        let cursor = await collection.find({ pid : grooms[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating  = reviews.forEach((item)=>{
+            sum+= number(item.rating)
+        })
+        grooms[i]['avgRating'] = totalRating/grooms.length
+        if(!grooms[i]['avgRating'])  grooms[i]['avgRating'] = 0
+
+
+        if(token) {
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groomwears' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    grooms[i]['liked'] = true
+                } else {
+                    grooms[i]['liked'] = false
+                }
+            }
+        } else {
+            grooms[i]['liked'] = false
+        }
+    }
+
+
     if (grooms) {
         if (search) {
             grooms = grooms.filter(i => {
@@ -145,7 +180,26 @@ async function detailGroom(req, res) {
         cursor = collection.find({tags : {$in :grooms[0]['tags'] }}).limit(3)
         let relatedObjects = await cursor.toArray();
         grooms[0]['relatedObjects'] = relatedObjects;
-
+       
+        if(token) {
+            let i=0;
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : grooms[i]['_id'], type:'groomwears' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    grooms[i]['liked'] = true
+                } else {
+                    grooms[i]['liked'] = false
+                }
+            }
+        } else {
+            grooms[i]['liked'] = false
+        }
 
         return res.json({ status: 'success', message: '', data: grooms[0] })
     } else {

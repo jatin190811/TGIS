@@ -100,16 +100,52 @@ async function listVenue(req, res) {
     let collection = await client.db("admin").collection('venues');
     let cursor = collection.find({ isDeleted: false })
     let venues = await cursor.toArray()
+
+    for (let i = 0; i < venues.length; i++) {
+
+        let collection = await client.db("admin").collection('reviews');
+        let cursor = await collection.find({ pid : venues[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating  = reviews.forEach((item)=>{
+            sum+= number(item.rating)
+        })
+        venues[i]['avgRating'] = totalRating/venues.length
+        if(!venues[i]['avgRating'])  venues[i]['avgRating'] =0
+
+        if(token) {
+
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : venues[i]['_id'], type:'venue' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    venues[i]['liked'] = true
+                } else {
+                    venues[i]['liked'] = false
+                }
+            }
+        } else {
+            venues[i]['liked'] = false
+        }
+    }
+
+
+
     if (venues) {
         if (search) {
             venues = venues.filter(i => {
-                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
+                return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 
-        if(type) {
+        if (type) {
             venues = venues.filter(i => {
-                return i.type==type 
+                return i.type == type
             })
         }
 
@@ -145,13 +181,31 @@ async function detailVenue(req, res) {
     if (venues.length) {
 
 
-        cursor = collection.find({tags : {$in :venues[0]['tags'] }}).limit(3)
+        cursor = collection.find({ tags: { $in: venues[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
         console.log(venues[0]['tags'])
         venues[0]['relatedObjects'] = relatedObjects;
 
 
-
+        if(token) {
+            let i = 0
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token  })
+            let user = await cursor.toArray();
+        
+            if(user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid : venues[i]['_id'], type:'venue' })
+                let likes = await cursor.toArray();
+                if(likes.length) {
+                    venues[i]['liked'] = true
+                } else {
+                    venues[i]['liked'] = false
+                }
+            }
+        } else {
+            venues[i]['liked'] = false
+        }
 
         return res.json({ status: 'success', message: '', data: venues[0] })
     } else {
