@@ -76,7 +76,7 @@ async function unlike(req,res) {
     if(user.length) {
         let _id = user[0]['_id']
         let collection = await client.db("admin").collection('likes');
-        let result = await collection.deleteMany({ uid: _id, pid, type })
+        let result = await collection.deleteMany({ uid: _id, pid : ObjectId(pid), type })
         if (result.acknowledged) {
             return res.json({ status: 'success', message: 'Sucessfully Unliked', data: { } })
         } else {
