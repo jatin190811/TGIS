@@ -73,12 +73,6 @@ async function doMessage(req, res) {
         vid = req.body.vid
     }
 
-    if (!req.body.name) {
-        return res.json({ status: 'error', error: '006', message: 'name not found' })
-    } else {
-        name = String(req.body.name).toLowerCase().trim()
-    }
-
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
@@ -103,9 +97,17 @@ async function doMessage(req, res) {
         metadata = req.body.metadata
     }
 
+    let otp = 222222 // Math.floor(100000 + Math.random() * 900000) ;  
+    otp = String(otp)
 
+    let collection = await client.db("admin").collection('messages');
+    let result = await collection.insertOne({ name, vtype, vid, email, phone, message, metadata, otp  })
+    if (result.acknowledged) {
+        return res.json({ status: 'success', message: 'Message successfully Sent', data: { ref: result.insertedId } })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
 
-    return res.json({ status: 'success', message: 'Message successfully Sent', data: {} })
 
 }
 
