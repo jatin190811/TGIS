@@ -16,18 +16,18 @@ async function listVendors(req, res) {
     collection = await client.db("admin").collection('venues');
     cursor = collection.find(searchObj)
     let venues = await cursor.toArray()
-    venues = venues.map(i => { i.type = "venues"; return i })
+    venues = venues.map(i => { i.type = "venue"; return i })
 
 
     collection = await client.db("admin").collection('bridals');
     cursor = collection.find(searchObj)
     let bridalsMakeup = await cursor.toArray()
-    bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
+    bridalsMakeup = bridalsMakeup.map(i => { i.type = "makeup"; return i })
 
     collection = await client.db("admin").collection('bridalwears');
     cursor = collection.find(searchObj)
     let bridalsWaer = await cursor.toArray()
-    bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
+    bridalsWaer = bridalsWaer.map(i => { i.type = "bridalwear"; return i })
 
     collection = await client.db("admin").collection('photographers');
     cursor = collection.find(searchObj)
@@ -37,13 +37,13 @@ async function listVendors(req, res) {
     collection = await client.db("admin").collection('groomwears');
     cursor = collection.find(searchObj)
     let groomwears = await cursor.toArray()
-    groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
+    groomwears = groomwears.map(i => { i.type = "groomwear"; return i })
 
 
     collection = await client.db("admin").collection('mehndis');
     cursor = collection.find(searchObj)
     let mehndis = await cursor.toArray()
-    mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
+    mehndis = mehndis.map(i => { i.type = "mehandi"; return i })
 
     collection = await client.db("admin").collection('planners');
     cursor = collection.find(searchObj)
@@ -94,18 +94,18 @@ async function searchVendors(req, res) {
     cursor = collection.find(searchObj)
     let venues = await cursor.toArray()
    
-    venues = venues.map(i => { i.type = "venues"; return i })
+    venues = venues.map(i => { i.type = "venue"; return i })
 
 
     collection = await client.db("admin").collection('bridals');
     cursor = collection.find(searchObj)
     let bridalsMakeup = await cursor.toArray()
-    bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
+    bridalsMakeup = bridalsMakeup.map(i => { i.type = "makeup"; return i })
 
     collection = await client.db("admin").collection('bridalwears');
     cursor = collection.find(searchObj)
     let bridalsWaer = await cursor.toArray()
-    bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
+    bridalsWaer = bridalsWaer.map(i => { i.type = "bridalwear"; return i })
 
     collection = await client.db("admin").collection('photographers');
     cursor = collection.find(searchObj)
@@ -115,13 +115,13 @@ async function searchVendors(req, res) {
     collection = await client.db("admin").collection('groomwears');
     cursor = collection.find(searchObj)
     let groomwears = await cursor.toArray()
-    groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
+    groomwears = groomwears.map(i => { i.type = "groomwear"; return i })
 
 
     collection = await client.db("admin").collection('mehndis');
     cursor = collection.find(searchObj)
     let mehndis = await cursor.toArray()
-    mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
+    mehndis = mehndis.map(i => { i.type = "mehandi"; return i })
 
     collection = await client.db("admin").collection('planners');
     cursor = collection.find(searchObj)
@@ -131,7 +131,7 @@ async function searchVendors(req, res) {
     let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners, ...venues]
 
     if (collective.length) {
-        return res.json({ status: 'success', message: collective.length + ' objects found', data: collective })
+        return res.json({ status: 'success', message: collective.length + ' vendor found', data: collective })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such vendor found' })
     }

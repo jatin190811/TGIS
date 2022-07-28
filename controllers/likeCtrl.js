@@ -114,10 +114,10 @@ async function list(req,res) {
         for(let i=0;i<likes.length;i++) {
             let collectionIn ;
             if(likes[i]['type']=='venue') collectionIn  = await client.db("admin").collection('venues');
-            if(likes[i]['type']=='bridal_makeup') collectionIn  = await client.db("admin").collection('bridals');
-            if(likes[i]['type']=='bridal_wear') collectionIn  = await client.db("admin").collection('bridalwears');
+            if(likes[i]['type']=='makeup') collectionIn  = await client.db("admin").collection('bridals');
+            if(likes[i]['type']=='bridalwear') collectionIn  = await client.db("admin").collection('bridalwears');
             if(likes[i]['type']=='photographer') collectionIn  = await client.db("admin").collection('photographers');
-            if(likes[i]['type']=='groom_wears') collectionIn  = await client.db("admin").collection('groomwears');
+            if(likes[i]['type']=='groomwears') collectionIn  = await client.db("admin").collection('groomwears');
             if(likes[i]['type']=='mehndis') collectionIn  = await client.db("admin").collection('mehndis');
             if(likes[i]['type']=='decor') collectionIn  = await client.db("admin").collection('planners');
             console.log(collectionIn)
