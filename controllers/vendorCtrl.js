@@ -50,7 +50,7 @@ async function listVendors(req, res) {
     let planners = await cursor.toArray()
     planners = planners.map(i => { i.type = "decor"; return i })
 
-    let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners]
+    let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners, ...venues]
 
     if (collective.length) {
         return res.json({ status: 'success', message: '', data: collective })
@@ -87,53 +87,54 @@ async function searchVendors(req, res) {
 
             }]
     }
-}
 
 
-collection = await client.db("admin").collection('venues');
-cursor = collection.find(searchObj)
-let venues = await cursor.toArray()
-venues = venues.map(i => { i.type = "venues"; return i })
+
+    collection = await client.db("admin").collection('venues');
+    cursor = collection.find(searchObj)
+    let venues = await cursor.toArray()
+   
+    venues = venues.map(i => { i.type = "venues"; return i })
 
 
-collection = await client.db("admin").collection('bridals');
-cursor = collection.find(searchObj)
-let bridalsMakeup = await cursor.toArray()
-bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
+    collection = await client.db("admin").collection('bridals');
+    cursor = collection.find(searchObj)
+    let bridalsMakeup = await cursor.toArray()
+    bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
 
-collection = await client.db("admin").collection('bridalwears');
-cursor = collection.find(searchObj)
-let bridalsWaer = await cursor.toArray()
-bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
+    collection = await client.db("admin").collection('bridalwears');
+    cursor = collection.find(searchObj)
+    let bridalsWaer = await cursor.toArray()
+    bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
 
-collection = await client.db("admin").collection('photographers');
-cursor = collection.find(searchObj)
-let photographers = await cursor.toArray()
-photographers = photographers.map(i => { i.type = "photographer"; return i })
+    collection = await client.db("admin").collection('photographers');
+    cursor = collection.find(searchObj)
+    let photographers = await cursor.toArray()
+    photographers = photographers.map(i => { i.type = "photographer"; return i })
 
-collection = await client.db("admin").collection('groomwears');
-cursor = collection.find(searchObj)
-let groomwears = await cursor.toArray()
-groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
+    collection = await client.db("admin").collection('groomwears');
+    cursor = collection.find(searchObj)
+    let groomwears = await cursor.toArray()
+    groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
 
 
-collection = await client.db("admin").collection('mehndis');
-cursor = collection.find(searchObj)
-let mehndis = await cursor.toArray()
-mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
+    collection = await client.db("admin").collection('mehndis');
+    cursor = collection.find(searchObj)
+    let mehndis = await cursor.toArray()
+    mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
 
-collection = await client.db("admin").collection('planners');
-cursor = collection.find(searchObj)
-let planners = await cursor.toArray()
-planners = planners.map(i => { i.type = "decor"; return i })
+    collection = await client.db("admin").collection('planners');
+    cursor = collection.find(searchObj)
+    let planners = await cursor.toArray()
+    planners = planners.map(i => { i.type = "decor"; return i })
 
-let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners]
+    let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners, ...venues]
 
-if (collective.length) {
-    return res.json({ status: 'success', message: collective.length + ' objects found', data: collective })
-} else {
-    return res.json({ status: 'error', error: '019', message: 'No such vendor found' })
-}
+    if (collective.length) {
+        return res.json({ status: 'success', message: collective.length + ' objects found', data: collective })
+    } else {
+        return res.json({ status: 'error', error: '019', message: 'No such vendor found' })
+    }
 }
 
 
