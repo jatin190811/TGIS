@@ -12,6 +12,13 @@ async function listVendors(req, res) {
         isDeleted: false
     }
 
+
+    collection = await client.db("admin").collection('venues');
+    cursor = collection.find(searchObj)
+    let venues = await cursor.toArray()
+    venues = venues.map(i => { i.type = "venues"; return i })
+
+
     collection = await client.db("admin").collection('bridals');
     cursor = collection.find(searchObj)
     let bridalsMakeup = await cursor.toArray()
@@ -48,7 +55,7 @@ async function listVendors(req, res) {
     if (collective.length) {
         return res.json({ status: 'success', message: '', data: collective })
     } else {
-        return res.json({ status: 'error', error: '019', message: 'No such vandor found' })
+        return res.json({ status: 'error', error: '019', message: 'No such vendor found' })
     }
 
 }
@@ -65,59 +72,68 @@ async function searchVendors(req, res) {
     }
 
 
-    let searchObj = {
+    let searchObj =
+    {
         $and: [
             { isDeleted: { $ne: true } },
             {
                 $or: [
                     { name: { $regex: searchkey, $options: 'i' } },
-                    { address: { $regex: searchkey, $options: 'i' },  },
+                    { address: { $regex: searchkey, $options: 'i' }, },
                     { description: { $regex: searchkey, $options: 'i' } },
                     {
                         tags: { $elemMatch: { $eq: searchkey } }
                     }]
-            }
-        ]
+
+            }]
     }
-
-    collection = await client.db("admin").collection('bridals');
-    cursor = collection.find(searchObj)
-    let bridalsMakeup = await cursor.toArray()
-    bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
-
-    collection = await client.db("admin").collection('bridalwears');
-    cursor = collection.find(searchObj)
-    let bridalsWaer = await cursor.toArray()
-    bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
-
-    collection = await client.db("admin").collection('photographers');
-    cursor = collection.find(searchObj)
-    let photographers = await cursor.toArray()
-    photographers = photographers.map(i => { i.type = "photographer"; return i })
-
-    collection = await client.db("admin").collection('groomwears');
-    cursor = collection.find(searchObj)
-    let groomwears = await cursor.toArray()
-    groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
+}
 
 
-    collection = await client.db("admin").collection('mehndis');
-    cursor = collection.find(searchObj)
-    let mehndis = await cursor.toArray()
-    mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
+collection = await client.db("admin").collection('venues');
+cursor = collection.find(searchObj)
+let venues = await cursor.toArray()
+venues = venues.map(i => { i.type = "venues"; return i })
 
-    collection = await client.db("admin").collection('planners');
-    cursor = collection.find(searchObj)
-    let planners = await cursor.toArray()
-    planners = planners.map(i => { i.type = "decor"; return i })
 
-    let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners]
+collection = await client.db("admin").collection('bridals');
+cursor = collection.find(searchObj)
+let bridalsMakeup = await cursor.toArray()
+bridalsMakeup = bridalsMakeup.map(i => { i.type = "bridal_makeup"; return i })
 
-    if (collective.length) {
-        return res.json({ status: 'success', message: collective.length+' objects found', data: collective })
-    } else {
-        return res.json({ status: 'error', error: '019', message: 'No such vandor found' })
-    }
+collection = await client.db("admin").collection('bridalwears');
+cursor = collection.find(searchObj)
+let bridalsWaer = await cursor.toArray()
+bridalsWaer = bridalsWaer.map(i => { i.type = "bridal_wear"; return i })
+
+collection = await client.db("admin").collection('photographers');
+cursor = collection.find(searchObj)
+let photographers = await cursor.toArray()
+photographers = photographers.map(i => { i.type = "photographer"; return i })
+
+collection = await client.db("admin").collection('groomwears');
+cursor = collection.find(searchObj)
+let groomwears = await cursor.toArray()
+groomwears = groomwears.map(i => { i.type = "groom_wears"; return i })
+
+
+collection = await client.db("admin").collection('mehndis');
+cursor = collection.find(searchObj)
+let mehndis = await cursor.toArray()
+mehndis = mehndis.map(i => { i.type = "mehndis"; return i })
+
+collection = await client.db("admin").collection('planners');
+cursor = collection.find(searchObj)
+let planners = await cursor.toArray()
+planners = planners.map(i => { i.type = "decor"; return i })
+
+let collective = [...bridalsMakeup, ...bridalsWaer, ...groomwears, ...mehndis, ...photographers, ...planners]
+
+if (collective.length) {
+    return res.json({ status: 'success', message: collective.length + ' objects found', data: collective })
+} else {
+    return res.json({ status: 'error', error: '019', message: 'No such vendor found' })
+}
 }
 
 
