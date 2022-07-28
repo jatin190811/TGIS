@@ -128,7 +128,7 @@ async function verifymessage(req, res) {
     }
 
     await client.connect();
-    let collection = await client.db("admin").collection('users');
+    let collection = await client.db("admin").collection('messages');
     let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { messageOtp: otp }] }, { $set: { 'active': true } })
     if (result.modifiedCount) {
         return res.json({ status: 'success', message: 'Account Successfully created', data: {} })
