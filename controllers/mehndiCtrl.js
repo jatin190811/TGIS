@@ -95,6 +95,7 @@ async function listMehndi(req, res) {
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
+    let city = req.body.city || false;
 
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
@@ -148,7 +149,8 @@ async function listMehndi(req, res) {
             })
         }
 
-
+        if(city) appliedFilters['city'] = city
+     
         if(appliedFilters) {
         mehndis = mehndis.filter(i => {
             let contains = false;

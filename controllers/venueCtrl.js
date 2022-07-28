@@ -96,6 +96,7 @@ async function listVenue(req, res) {
     let appliedFilters = req.body.appliedFilters || false;
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
+    let city = req.body.city || false;
 
     let collection = await client.db("admin").collection('venues');
     let cursor = collection.find({ isDeleted: false })
@@ -153,6 +154,8 @@ async function listVenue(req, res) {
             })
         }
 
+        if(city) appliedFilters['city'] = city
+     
         if (appliedFilters) {
             venues = venues.filter(i => {
                 let contains = false;

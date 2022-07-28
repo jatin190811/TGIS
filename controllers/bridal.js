@@ -96,6 +96,7 @@ async function listBridal(req, res) {
     let appliedFilters = req.body.appliedFilters;
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
+    let city = req.body.city || false;
 
     let cursor = collection.find({ isDeleted: false })
     let bridals = await cursor.toArray()
@@ -150,13 +151,14 @@ async function listBridal(req, res) {
             })
         }
 
-
+        if(city) appliedFilters['city'] = city
+     
         if(appliedFilters) {
         bridals = bridals.filter(i => {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
                 if (i.specifications && i.specifications[filter]) {
-                    
+
                     if(appliedFilters[filter].includes(i.specifications[filter])){
                         contains = true
                     }
