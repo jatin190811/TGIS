@@ -154,8 +154,9 @@ async function listPlanner(req, res) {
             let contains = false;
             Object.keys(appliedFilters).forEach(filter => {
                 if (i.specifications && i.specifications[filter]) {
-                    appliedFilters[filter].includes(i.specifications[filter])
-                    contains = true
+                    if(appliedFilters[filter].includes(i.specifications[filter])){
+                        contains = true
+                    }
                 }
 
 

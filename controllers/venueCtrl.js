@@ -153,15 +153,17 @@ async function listVenue(req, res) {
             })
         }
 
-
         if (appliedFilters) {
             venues = venues.filter(i => {
                 let contains = false;
-
+              
                 Object.keys(appliedFilters).forEach(filter => {
                     if (i.specifications && i.specifications[filter]) {
-                        appliedFilters[filter].includes(i.specifications[filter])
-                        contains = true
+                       
+                        if(appliedFilters[filter].includes(i.specifications[filter])){
+                            contains = true
+                        }
+                    
                     }
                 })
                 return contains
