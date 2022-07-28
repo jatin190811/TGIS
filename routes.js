@@ -19,7 +19,7 @@ const testCtrl = require('./controllers/testimonialsCtrl.js')
 const contactCtrl = require('./controllers/contactCtrl.js')
 const likeCtrl = require('./controllers/likeCtrl.js')
 const ratingCtrl = require('./controllers/ratingCtrl.js')
-
+const mainCtrl = require('./controllers/mainCtrl.js')
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -117,6 +117,8 @@ router.post('/search', vendorCtrl.searchVendors)
 
 router.post('/add-rating', ratingCtrl.add)
 router.post('/list-rating', ratingCtrl.list)
+
+router.post('/cities', mainCtrl.cities)
 
 
 module.exports = router
