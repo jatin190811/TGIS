@@ -110,6 +110,8 @@ router.get('/testimonials', testCtrl.list)
 router.post('/contact-us', contactCtrl.doContact)
 
 router.post('/message-us', contactCtrl.doMessage)
+router.post('/verify-message', contactCtrl.verifymessage)
+
 router.post('/search', vendorCtrl.searchVendors)
 
 

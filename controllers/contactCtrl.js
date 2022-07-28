@@ -86,7 +86,7 @@ async function doMessage(req, res) {
     }
 
     if (!req.body.message) {
-        return res.json({ status: 'error', error: '006', message: 'message not found' })
+        message = null
     } else {
         message = String(req.body.message).toLowerCase().trim()
     }
@@ -97,11 +97,11 @@ async function doMessage(req, res) {
         metadata = req.body.metadata
     }
 
-    let otp = 222222 // Math.floor(100000 + Math.random() * 900000) ;  
-    otp = String(otp)
+    let messageOtp = 222222 // Math.floor(100000 + Math.random() * 900000) ;  
+    messageOtp = String(messageOtp)
 
     let collection = await client.db("admin").collection('messages');
-    let result = await collection.insertOne({ name, vtype, vid, email, phone, message, metadata, otp  })
+    let result = await collection.insertOne({ name, vtype, vid, email, phone, message, metadata, messageOtp  })
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Message successfully Sent', data: { ref: result.insertedId } })
     } else {
@@ -112,6 +112,35 @@ async function doMessage(req, res) {
 }
 
 
+
+async function verifymessage(req, res) {
+    let ref, otp;
+    if (!req.body.ref) {
+        return res.json({ status: 'error', error: '024', message: 'Reference not found' })
+    } else {
+        ref = String(req.body.ref)
+    }
+
+    if (!req.body.otp) {
+        return res.json({ status: 'error', error: '025', message: 'OTP not found' })
+    } else {
+        otp = String(req.body.otp).toLowerCase().trim()
+    }
+
+    await client.connect();
+    let collection = await client.db("admin").collection('users');
+    let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { messageOtp: otp }] }, { $set: { 'active': true } })
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Account Successfully created', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '026', message: 'Invalid Otp' })
+    }
+
+}
+
+
+
 exports.doContact = doContact;
 exports.doMessage = doMessage;
+exports.verifymessage = verifymessage;
 
