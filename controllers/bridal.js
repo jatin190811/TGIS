@@ -130,6 +130,7 @@ async function listBridal(req, res) {
                 }
             }
         } else {
+            let i = 0
             bridals[i]['liked'] = false
         }
     }

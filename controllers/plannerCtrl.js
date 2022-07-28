@@ -201,6 +201,7 @@ async function detailPlanner(req, res) {
                 }
             }
         } else {
+            let i = 0
             planners[i]['liked'] = false
         }
 

@@ -208,6 +208,7 @@ async function detailVenue(req, res) {
                 }
             }
         } else {
+            let i = 0
             venues[i]['liked'] = false
         }
 

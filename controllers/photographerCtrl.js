@@ -199,6 +199,7 @@ async function detailPhotographer(req, res) {
                 }
             }
         } else {
+            let i = 0
             photographers[i]['liked'] = false
         }
 

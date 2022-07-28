@@ -200,6 +200,7 @@ async function detailMehndi(req, res) {
                 }
             }
         } else {
+            let i = 0
             mehndis[i]['liked'] = false
         }
 

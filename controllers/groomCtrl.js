@@ -198,6 +198,7 @@ async function detailGroom(req, res) {
                 }
             }
         } else {
+            let i = 0
             grooms[i]['liked'] = false
         }
 
