@@ -88,7 +88,7 @@ async function createGroom(req, res) {
 
 
 
-async function slistGroom(req, res) {
+async function listGroom(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('groomwears');

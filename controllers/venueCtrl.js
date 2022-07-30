@@ -130,7 +130,6 @@ async function listVenue(req, res) {
                 let cursor = await collection.find({ uid: user[0]['_id'], pid: venues[i]['_id'], type: 'venue' })
                 let likes = await cursor.toArray();
 
-
                 if (likes.length) {
                     venues[i]['liked'] = true
                 } else {

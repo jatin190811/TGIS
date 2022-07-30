@@ -4,7 +4,7 @@ const client = require('../config/database')
 var ObjectId = require('mongodb').ObjectId;
 
 
-async function addRating(req,res) {
+async function addRating(req, res) {
     let token = req.headers['x-access-token'];
     if (!token) {
         return res.json({ status: 'error', error: '010', message: 'Token not found' })
@@ -35,24 +35,24 @@ async function addRating(req,res) {
         review = ''
     } else {
         review = String(req.body.review).toLowerCase().trim()
-   
+
     }
-    
+
 
     let collection = await client.db("admin").collection('users');
-    let cursor = collection.find({ token  })
+    let cursor = collection.find({ token })
     let user = await cursor.toArray();
 
-    if(user.length) {
+    if (user.length) {
         let _id = user[0]['_id']
-        let collection = await client.db("admin").collection('reviews');      
-        let result = await collection.insertOne({ uid: _id, pid, type, rating, review })
+        let collection = await client.db("admin").collection('reviews');
+        let result = await collection.insertOne({ uid: _id, pid, type, rating, review, name: user[0]['name'] })
         if (result.acknowledged) {
             return res.json({ status: 'success', message: 'Successfully added', data: {} })
         } else {
             return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
         }
-        
+
     } else {
         return res.json({ status: 'error', error: '014', message: 'Session Expired' })
     }
@@ -65,10 +65,10 @@ async function addRating(req,res) {
 
 
 
-async function listRating(req,res) {
+async function listRating(req, res) {
     let token = req.headers['x-access-token'];
     if (!token) {
-       token = ''
+        token = ''
     } else {
         token = token
     }
@@ -90,22 +90,22 @@ async function listRating(req,res) {
     let cursor = await collection.find({ pid, type })
     let reviews = await cursor.toArray();
 
-    if(token) {
+    if (token) {
         let collection = await client.db("admin").collection('users');
-        let cursor = collection.find({ token  })
+        let cursor = collection.find({ token })
         let user = await cursor.toArray();
 
-        if(user.length) {
+        if (user.length) {
             let _id = user[0]['_id']
             ownReview = reviews.filter(item => String(item.uid) == String(_id))[0]
-            return res.json({ status: 'success', message: reviews.length +' reviews found', data: {reviews, ownReview}   })
-            
+            return res.json({ status: 'success', message: reviews.length + ' reviews found', data: { reviews, ownReview } })
+
         } else {
             return res.json({ status: 'error', error: '014', message: 'Session Expired' })
         }
 
     } else {
-        return res.json({ status: 'success', message: reviews.length +' reviews found', data: {reviews}   })
+        return res.json({ status: 'success', message: reviews.length + ' reviews found', data: { reviews } })
     }
 
 }
