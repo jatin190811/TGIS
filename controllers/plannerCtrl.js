@@ -96,6 +96,7 @@ async function listPlanner(req, res) {
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
     let city = req.body.city || false;
+    let avgRating = req.body.avgRating || false;
 
     let cursor = collection.find({ isDeleted: false })
     let planners = await cursor.toArray()
@@ -104,26 +105,26 @@ async function listPlanner(req, res) {
     for (let i = 0; i < planners.length; i++) {
 
         let collection = await client.db("admin").collection('reviews');
-        let cursor = await collection.find({ pid : planners[i]['_id'] })
+        let cursor = await collection.find({ pid: planners[i]['_id'] })
         let reviews = await cursor.toArray();
         let sum = 0
-        totalRating  = reviews.forEach((item)=>{
-            sum+= number(item.rating)
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
         })
-        planners[i]['avgRating'] = totalRating/planners.length
-        if(!planners[i]['avgRating'])  planners[i]['avgRating'] = 0
+        planners[i]['avgRating'] = totalRating / planners.length
+        if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
 
 
-        if(token) {
+        if (token) {
             let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
+            let cursor = collection.find({ token })
             let user = await cursor.toArray();
-        
-            if(user.length) {
+
+            if (user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'decor' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: planners[i]['_id'], type: 'decor' })
                 let likes = await cursor.toArray();
-                if(likes.length) {
+                if (likes.length) {
                     planners[i]['liked'] = true
                 } else {
                     planners[i]['liked'] = false
@@ -138,33 +139,42 @@ async function listPlanner(req, res) {
     if (planners) {
         if (search) {
             planners = planners.filter(i => {
-                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
+                return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 
-        if(type) {
+        if (type) {
             planners = planners.filter(i => {
-                return i.type==type 
+                return i.type == type
             })
         }
 
+
+        if (city) {
+            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
+            appliedFilters['city'] = city
+        }
         
-        if(city) appliedFilters['city'] = city
-        if(appliedFilters) {
-        planners = planners.filter(i => {
-            let contains = false;
-            Object.keys(appliedFilters).forEach(filter => {
-                if (i.specifications && i.specifications[filter]) {
-                    if(appliedFilters[filter].includes(i.specifications[filter])){
-                        contains = true
+        if (appliedFilters) {
+            planners = planners.filter(i => {
+                let contains = false;
+                Object.keys(appliedFilters).forEach(filter => {
+                    if (i.specifications && i.specifications[filter]) {
+                        if (appliedFilters[filter].includes(i.specifications[filter])) {
+                            contains = true
+                        }
                     }
-                }
 
 
+                })
+                return contains
             })
-            return contains
-        })
-    }
+        }
+        if (avgRating) {
+            planners = planners.filter(i => {
+                return i['avgRating'] >= avgRating
+            })
+        }
         return res.json({ status: 'success', message: planners.length + ' results found', data: planners, filters: filtersList.planner })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Planner  found' })
@@ -182,21 +192,21 @@ async function detailPlanner(req, res) {
     if (planners.length) {
 
 
-        cursor = collection.find({tags : {$in :planners[0]['tags'] }}).limit(3)
+        cursor = collection.find({ tags: { $in: planners[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
         planners[0]['relatedObjects'] = relatedObjects;
 
-        if(token) {
-            let i=0;
+        if (token) {
+            let i = 0;
             let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
+            let cursor = collection.find({ token })
             let user = await cursor.toArray();
-        
-            if(user.length) {
+
+            if (user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : planners[i]['_id'], type:'decor' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: planners[i]['_id'], type: 'decor' })
                 let likes = await cursor.toArray();
-                if(likes.length) {
+                if (likes.length) {
                     planners[i]['liked'] = true
                 } else {
                     planners[i]['liked'] = false

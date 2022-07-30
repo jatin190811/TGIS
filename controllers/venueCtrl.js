@@ -97,6 +97,8 @@ async function listVenue(req, res) {
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
     let city = req.body.city || false;
+    let avgRating = req.body.avgRating || false;
+
 
     let collection = await client.db("admin").collection('venues');
     let cursor = collection.find({ isDeleted: false })
@@ -105,30 +107,31 @@ async function listVenue(req, res) {
     for (let i = 0; i < venues.length; i++) {
 
         let collection = await client.db("admin").collection('reviews');
-        let cursor = await collection.find({ pid : venues[i]['_id'] })
+        let cursor = await collection.find({ pid: venues[i]['_id'] })
         let reviews = await cursor.toArray();
         let sum = 0
-        totalRating  = reviews.forEach((item)=>{
-            sum+= number(item.rating)
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
         })
-        venues[i]['avgRating'] = totalRating/venues.length
-        if(!venues[i]['avgRating'])  venues[i]['avgRating'] =0
-       
-        if(token) {
-            
-            let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
-            let user = await cursor.toArray();
-        
-            if(user.length) {
-                let collection = await client.db("admin").collection('likes');
-                console.log({ uid: user[0]['_id'], pid : venues[i]['_id'], type:'venue' })
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : venues[i]['_id'], type:'venue' })
-                let likes = await cursor.toArray();
-                console.log('adsfadsfadsf',likes)
-  
+        venues[i]['avgRating'] = totalRating / venues.length
+        if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
 
-                if(likes.length) {
+
+
+
+        if (token) {
+
+            let collection = await client.db("admin").collection('users');
+            let cursor = collection.find({ token })
+            let user = await cursor.toArray();
+
+            if (user.length) {
+                let collection = await client.db("admin").collection('likes');
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: venues[i]['_id'], type: 'venue' })
+                let likes = await cursor.toArray();
+
+
+                if (likes.length) {
                     venues[i]['liked'] = true
                 } else {
                     venues[i]['liked'] = false
@@ -154,22 +157,32 @@ async function listVenue(req, res) {
             })
         }
 
-        if(city) appliedFilters['city'] = city
-     
+        if (city) {
+            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
+            appliedFilters['city'] = city
+        }
+
+
         if (appliedFilters) {
             venues = venues.filter(i => {
                 let contains = false;
-              
+
                 Object.keys(appliedFilters).forEach(filter => {
                     if (i.specifications && i.specifications[filter]) {
-                       
-                        if(appliedFilters[filter].includes(i.specifications[filter])){
+
+                        if (appliedFilters[filter].includes(i.specifications[filter])) {
                             contains = true
                         }
-                    
+
                     }
                 })
                 return contains
+            })
+        }
+
+        if (avgRating) {
+            venues = venues.filter(i => {
+                return i['avgRating'] >= avgRating
             })
         }
 
@@ -196,17 +209,17 @@ async function detailVenue(req, res) {
         venues[0]['relatedObjects'] = relatedObjects;
 
 
-        if(token) {
+        if (token) {
             let i = 0
             let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
+            let cursor = collection.find({ token })
             let user = await cursor.toArray();
-        
-            if(user.length) {
+
+            if (user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : String(venues[i]['_id']), type:'venue' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: String(venues[i]['_id']), type: 'venue' })
                 let likes = await cursor.toArray();
-                if(likes.length) {
+                if (likes.length) {
                     venues[i]['liked'] = true
                 } else {
                     venues[i]['liked'] = false

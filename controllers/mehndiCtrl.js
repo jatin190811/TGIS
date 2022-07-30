@@ -96,6 +96,7 @@ async function listMehndi(req, res) {
     let search = req.body.searchParam || false;
     let type = req.body.sub_cat || false;
     let city = req.body.city || false;
+    let avgRating = req.body.avgRating || false;
 
     let cursor = collection.find({ isDeleted: false })
     let mehndis = await cursor.toArray()
@@ -103,26 +104,26 @@ async function listMehndi(req, res) {
     for (let i = 0; i < mehndis.length; i++) {
 
         let collection = await client.db("admin").collection('reviews');
-        let cursor = await collection.find({ pid : mehndis[i]['_id'] })
+        let cursor = await collection.find({ pid: mehndis[i]['_id'] })
         let reviews = await cursor.toArray();
         let sum = 0
-        totalRating  = reviews.forEach((item)=>{
-            sum+= number(item.rating)
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
         })
-        mehndis[i]['avgRating'] = totalRating/mehndis.length
-        if(!mehndis[i]['avgRating'])  mehndis[i]['avgRating'] = 0
+        mehndis[i]['avgRating'] = totalRating / mehndis.length
+        if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0
 
 
-        if(token) {
+        if (token) {
             let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
+            let cursor = collection.find({ token })
             let user = await cursor.toArray();
-        
-            if(user.length) {
+
+            if (user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : mehndis[i]['_id'], type:'mehndis' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: mehndis[i]['_id'], type: 'mehndis' })
                 let likes = await cursor.toArray();
-                if(likes.length) {
+                if (likes.length) {
                     mehndis[i]['liked'] = true
                 } else {
                     mehndis[i]['liked'] = false
@@ -139,33 +140,43 @@ async function listMehndi(req, res) {
     if (mehndis) {
         if (search) {
             mehndis = mehndis.filter(i => {
-                return String(i.name).toLowerCase().match(String(search).toLowerCase())  || String(i.address).toLowerCase().match(String(search).toLowerCase())
+                return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
             })
         }
 
-        if(type) {
+        if (type) {
             mehndis = mehndis.filter(i => {
-                return i.type==type 
+                return i.type == type
             })
         }
 
-        if(city) appliedFilters['city'] = city
-     
-        if(appliedFilters) {
-        mehndis = mehndis.filter(i => {
-            let contains = false;
-            Object.keys(appliedFilters).forEach(filter => {
-                if (i.specifications && i.specifications[filter]) {
-                    if(appliedFilters[filter].includes(i.specifications[filter])){
-                        contains = true
+        if (city) {
+            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
+            appliedFilters['city'] = city
+        }
+
+        if (appliedFilters) {
+            mehndis = mehndis.filter(i => {
+                let contains = false;
+                Object.keys(appliedFilters).forEach(filter => {
+                    if (i.specifications && i.specifications[filter]) {
+                        if (appliedFilters[filter].includes(i.specifications[filter])) {
+                            contains = true
+                        }
                     }
-                }
 
 
+                })
+                return contains
             })
-            return contains
-        })
-    }
+        }
+
+        if (avgRating) {
+            mehndis = mehndis.filter(i => {
+                return i['avgRating'] >= avgRating
+            })
+        }
+
         return res.json({ status: 'success', message: mehndis.length + ' results found', data: mehndis, filters: filtersList.mehndi })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi  found' })
@@ -182,21 +193,21 @@ async function detailMehndi(req, res) {
     let mehndis = await cursor.toArray()
     if (mehndis.length) {
 
-        cursor = collection.find({tags : {$in :mehndis[0]['tags'] }}).limit(3)
+        cursor = collection.find({ tags: { $in: mehndis[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
         mehndis[0]['relatedObjects'] = relatedObjects;
 
-        if(token) {
-            let i=0
+        if (token) {
+            let i = 0
             let collection = await client.db("admin").collection('users');
-            let cursor = collection.find({ token  })
+            let cursor = collection.find({ token })
             let user = await cursor.toArray();
-        
-            if(user.length) {
+
+            if (user.length) {
                 let collection = await client.db("admin").collection('likes');
-                let cursor = await collection.find({ uid: user[0]['_id'], pid : mehndis[i]['_id'], type:'mehndis' })
+                let cursor = await collection.find({ uid: user[0]['_id'], pid: mehndis[i]['_id'], type: 'mehndis' })
                 let likes = await cursor.toArray();
-                if(likes.length) {
+                if (likes.length) {
                     mehndis[i]['liked'] = true
                 } else {
                     mehndis[i]['liked'] = false
