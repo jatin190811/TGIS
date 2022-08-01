@@ -119,6 +119,7 @@ router.post('/add-rating', ratingCtrl.add)
 router.post('/list-rating', ratingCtrl.list)
 
 router.post('/cities', mainCtrl.cities)
+router.post('/areas', mainCtrl.areas)
 
 
 module.exports = router
