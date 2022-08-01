@@ -46,7 +46,7 @@ async function addRating(req, res) {
     if (user.length) {
         let _id = user[0]['_id']
         let collection = await client.db("admin").collection('reviews');
-        let result = await collection.insertOne({ uid: _id, pid, type, rating, review, name: user[0]['name'] })
+        let result = await collection.insertOne({ uid: _id, pid, type, rating, review, name: user[0]['name'], currentDate: new Date().toLocaleString() , pic: user[0]['profilePic']    })
         if (result.acknowledged) {
             return res.json({ status: 'success', message: 'Successfully added', data: {} })
         } else {
