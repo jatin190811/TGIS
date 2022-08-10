@@ -18,23 +18,23 @@ function makeid(length) {
 
 
 async function createVenue(req, res) {
-    let images, name, address, tags, type, lat, lon;
+    let name, price, isFeatured, specifications, area_avail, description, ameneties, execuisite, facts, contact_details, tags, type, sub_cat, address;
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('venues');
-    if (req.files && req.files.length) {
-        images = req.files.map(i => {
-            const newName = makeid(14) + "." + i.filename.split('.').pop()
-            const nameArr = String(i.path).split('/');
-            nameArr.pop()
-            nameArr.push(newName)
-            const newPath = nameArr.join('/')
-            fs.renameSync(i.path, newPath)
-            return newPath
-        })
-    } else {
-        return res.json({ status: 'error', error: '003', message: 'Image not found' })
-    }
+    // if (req.files && req.files.length) {
+    //     images = req.files.map(i => {
+    //         const newName = makeid(14) + "." + i.filename.split('.').pop()
+    //         const nameArr = String(i.path).split('/');
+    //         nameArr.pop()
+    //         nameArr.push(newName)
+    //         const newPath = nameArr.join('/')
+    //         fs.renameSync(i.path, newPath)
+    //         return newPath
+    //     })
+    // } else {
+    //     return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    // }
 
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
@@ -42,45 +42,110 @@ async function createVenue(req, res) {
         name = String(req.body.name).toLowerCase().trim()
     }
 
-    if (!req.body.address) {
-        return res.json({ status: 'error', error: '006', message: 'name not found' })
+    if (!req.body.price) {
+        return res.json({ status: 'error', error: '006', message: 'price not found' })
     } else {
-        address = String(req.body.address).toLowerCase().trim()
+        price = String(req.body.price).toLowerCase().trim()
     }
 
-
-    if (!req.body.tags) {
-        return res.json({ status: 'error', error: '006', message: 'Tags not found' })
-    } else {
-        tags = req.body.tags.split(',').map(i => String(i).toLowerCase().trim())
-    }
 
     if (!req.body.type) {
-        return res.json({ status: 'error', error: '006', message: 'Type not found' })
+        return res.json({ status: 'error', error: '006', message: 'type not found' })
     } else {
         type = String(req.body.type).toLowerCase().trim()
     }
 
-    if (!req.body.lat) {
-        return res.json({ status: 'error', error: '006', message: 'Latitude not found' })
+
+    if (!req.body.sub_cat) {
+        return res.json({ status: 'error', error: '006', message: 'sub type not found' })
     } else {
-        lat = String(req.body.lat)
+        sub_cat = String(req.body.sub_cat).toLowerCase().trim()
+    }
+
+    if (!req.body.description) {
+        return res.json({ status: 'error', error: '006', message: 'description not found' })
+    } else {
+        description = String(req.body.description).toLowerCase().trim()
+    }
+
+
+    if (!req.body.address) {
+        return res.json({ status: 'error', error: '006', message: 'address not found' })
+    } else {
+        address = String(req.body.address).toLowerCase().trim()
+    }
+
+    if (!req.body.tags || req.body.tags.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Tags not found' })
+    } else {
+        tags = req.body.tags
+    }
+
+    if (!req.body.ameneties || req.body.ameneties.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Ameneties not found' })
+    } else {
+        ameneties = req.body.ameneties
+    }
+
+    if (!req.body.area_avail || req.body.area_avail.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Area available not found' })
+    } else {
+        area_avail = req.body.area_avail
+    }
+
+    if (!req.body.specifications || req.body.specifications.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Specifications not found' })
+    } else {
+        specifications = req.body.specifications
+    }
+
+    if (!req.body.facts || req.body.facts.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'FAQs not found' })
+    } else {
+        facts = req.body.facts
+    }
+
+    if (!req.body.contact_details || req.body.contact_details.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Contact Details not found' })
+    } else {
+        contact_details = req.body.contact_details
     }
 
     if (!req.body.execuisite) {
         execuisite = false
     } else {
-        execuisite = Boolean(execuisite)
+        execuisite = req.body.execuisite
     }
 
-
-    if (!req.body.lon) {
-        return res.json({ status: 'error', error: '006', message: 'Longitude not found' })
+    if (!req.body.isFeatured) {
+        isFeatured = false
     } else {
-        lon = String(req.body.lon)
+        isFeatured = req.body.isFeatured
     }
 
-    let result = await collection.insertOne({ name, images, execuisite, tags, type, address, lat, lon, createTime: Date.now(), isDeleted: false })
+    let detailedPrice = req.body.detailedPrice
+
+
+    let result = await collection.insertOne({
+        name,
+        price,
+        isFeatured,
+        specifications,
+        area_avail,
+        description,
+        ameneties,
+        execuisite,
+        facts,
+        contact_details,
+        tags,
+        type,
+        sub_cat,
+        address,
+        detailedPrice,
+        createTime: Date.now(),
+        isDeleted: false
+    })
+
     if (result.acknowledged) {
         return res.json({ status: 'success', message: 'Venue successfully created', data: {} })
     } else {
@@ -90,6 +155,130 @@ async function createVenue(req, res) {
 
 
 
+async function updateVenue(req, res) {
+    let id, name, price, isFeatured, specifications, area_avail, description, ameneties, execuisite, facts, contact_details, tags, type, sub_cat, address;
+
+    let token = req.headers['x-access-token'];
+    let collection = await client.db("admin").collection('venues');
+
+
+    if (!req.body.name) {
+        return res.json({ status: 'error', error: '006', message: 'name not found' })
+    } else {
+        name = String(req.body.name).toLowerCase().trim()
+    }
+
+    if (!req.body.price) {
+        return res.json({ status: 'error', error: '006', message: 'price not found' })
+    } else {
+        price = String(req.body.price).toLowerCase().trim()
+    }
+
+
+    if (!req.body.type) {
+        return res.json({ status: 'error', error: '006', message: 'type not found' })
+    } else {
+        type = String(req.body.type).toLowerCase().trim()
+    }
+
+
+    if (!req.body.sub_cat) {
+        return res.json({ status: 'error', error: '006', message: 'sub type not found' })
+    } else {
+        sub_cat = String(req.body.sub_cat).toLowerCase().trim()
+    }
+
+    if (!req.body.description) {
+        return res.json({ status: 'error', error: '006', message: 'description not found' })
+    } else {
+        description = String(req.body.description).toLowerCase().trim()
+    }
+
+
+    if (!req.body.address) {
+        return res.json({ status: 'error', error: '006', message: 'address not found' })
+    } else {
+        address = String(req.body.address).toLowerCase().trim()
+    }
+
+    if (!req.body.tags || req.body.tags.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Tags not found' })
+    } else {
+        tags = req.body.tags
+    }
+
+    if (!req.body.ameneties || req.body.ameneties.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Ameneties not found' })
+    } else {
+        ameneties = req.body.ameneties
+    }
+
+    if (!req.body.area_avail || req.body.area_avail.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Area available not found' })
+    } else {
+        area_avail = req.body.area_avail
+    }
+
+    if (!req.body.specifications || req.body.specifications.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Specifications not found' })
+    } else {
+        specifications = req.body.specifications
+    }
+
+    if (!req.body.facts || req.body.facts.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'FAQs not found' })
+    } else {
+        facts = req.body.facts
+    }
+
+    if (!req.body.contact_details || req.body.contact_details.length < 1) {
+        return res.json({ status: 'error', error: '006', message: 'Contact Details not found' })
+    } else {
+        contact_details = req.body.contact_details
+    }
+
+    if (!req.body.execuisite) {
+        execuisite = false
+    } else {
+        execuisite = req.body.execuisite
+    }
+
+    if (!req.body.isFeatured) {
+        isFeatured = false
+    } else {
+        isFeatured = req.body.isFeatured
+    }
+
+    let detailedPrice = req.body.detailedPrice
+
+    let result = await collection.update({ _id: ObjectId(req.body.pid) }, {
+        $set: {
+            name,
+            price,
+            isFeatured,
+            specifications,
+            area_avail,
+            description,
+            ameneties,
+            execuisite,
+            facts,
+            contact_details,
+            tags,
+            type,
+            sub_cat,
+            address,
+            detailedPrice,
+            updateTime: Date.now(),
+            isDeleted: false
+        }
+    })
+
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Venue successfully Updated', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+}
 async function listVenue(req, res) {
 
     let token = req.headers['x-access-token'];
@@ -168,7 +357,6 @@ async function listVenue(req, res) {
 
                 Object.keys(appliedFilters).forEach(filter => {
                     if (i.specifications && i.specifications[filter]) {
-
                         if (appliedFilters[filter].includes(i.specifications[filter])) {
                             contains = true
                         }
@@ -239,19 +427,29 @@ async function detailVenue(req, res) {
 async function deleteVenue(req, res) {
 
     let token = req.headers['x-access-token'];
-    let collection = await client.db("admin").collection('venues');
-    let id = req.params.id
-    let cursor = collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
-    if (cursor.modifiedCount) {
-        return res.json({ status: 'success', message: 'Vanue successfully deleted', data: {} })
+    let collection = await client.db("admin").collection('admin');
+    let cursor = collection.find({ token })
+    let admin = await cursor.toArray();
+    if (admin.length) {
+        let collection = await client.db("admin").collection('venues');
+        let id = req.params.id
+        let cursor = await collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
+        if (cursor.modifiedCount) {
+            return res.json({ status: 'success', message: 'Vanue successfully deleted', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
+        }
     } else {
-        return res.json({ status: 'error', error: '019', message: 'No such Venue found' })
+        return res.json({ status: 'error', error: '999', message: 'Token Expired' })
     }
+
+
 
 }
 
 
 exports.create = createVenue;
+exports.update = updateVenue;
 exports.list = listVenue;
 exports.details = detailVenue;
 exports.delete = deleteVenue;

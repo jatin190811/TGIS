@@ -21,6 +21,10 @@ const likeCtrl = require('./controllers/likeCtrl.js')
 const ratingCtrl = require('./controllers/ratingCtrl.js')
 const mainCtrl = require('./controllers/mainCtrl.js')
 
+
+const adminCtrl = require('./controllers/adminCtrl.js')
+
+
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, './public')
@@ -54,38 +58,45 @@ router.post('/user/pic', upload.array('userPic'), userCtrl.profilePic );
 
 
 
-router.post('/venue/create', upload.array('images'), venueCtrl.create );
+router.post('/venue/create', venueCtrl.create );
+router.post('/venue/update', venueCtrl.update );
 router.post('/venues',  venueCtrl.list );
 router.post('/venue/:id',  venueCtrl.details );
 router.post('/venue/delete/:id',  venueCtrl.delete );
 
 
-router.post('/bridal-makeup/create', upload.array('images'), bridalCtrl.create );
+router.post('/bridal-makeup/create', bridalCtrl.create );
+router.post('/bridal-makeup/update', bridalCtrl.update );
 router.post('/bridal-makeups',  bridalCtrl.list );
 router.post('/bridal-makeup/:id',  bridalCtrl.details );
 router.post('/bridal-makeup/delete/:id',  bridalCtrl.delete );
 
-router.post('/bridal-wear/create', upload.array('images'), bridalwearCtrl.create );
+router.post('/bridal-wear/create',bridalwearCtrl.create );
+router.post('/bridal-wear/update', bridalwearCtrl.update );
 router.post('/bridal-wears',  bridalwearCtrl.list );
 router.post('/bridal-wear/:id',  bridalwearCtrl.details );
 router.post('/bridal-wear/delete/:id',  bridalwearCtrl.delete );
 
-router.post('/photographer/create', upload.array('images'), photographerCtrl.create );
+router.post('/photographer/create', photographerCtrl.create );
+router.post('/photographer/update', photographerCtrl.update );
 router.post('/photographers',  photographerCtrl.list );
 router.post('/photographer/:id',  photographerCtrl.details );
 router.post('/photographer/delete/:id',  photographerCtrl.delete );
 
-router.post('/groom/create', upload.array('images'), groomCtrl.create );
+router.post('/groom/create',  groomCtrl.create );
+router.post('/groom/update', groomCtrl.update );
 router.post('/groom',  groomCtrl.list );
 router.post('/groom/:id',  groomCtrl.details );
 router.post('/groom/delete/:id',  groomCtrl.delete );
 
-router.post('/mehndi/create', upload.array('images'), mehndiCtrl.create );
+router.post('/mehndi/create',mehndiCtrl.create );
+router.post('/mehndi/update', mehndiCtrl.update );
 router.post('/mehndi',  mehndiCtrl.list );
 router.post('/mehndi/:id',  mehndiCtrl.details );
 router.post('/mehndi/delete/:id',  mehndiCtrl.delete );
 
-router.post('/planner/create', upload.array('images'), plannerCtrl.create );
+router.post('/planner/create',  plannerCtrl.create );
+router.post('/planner/update', plannerCtrl.update );
 router.post('/planner',  plannerCtrl.list );
 router.post('/planner/:id',  plannerCtrl.details );
 router.post('/planner/delete/:id',  plannerCtrl.delete );
@@ -120,6 +131,12 @@ router.post('/list-rating', ratingCtrl.list)
 
 router.post('/cities', mainCtrl.cities)
 router.post('/areas', mainCtrl.areas)
+
+
+
+/* admin */
+
+router.post('/admin/login', adminCtrl.login)
 
 
 module.exports = router
