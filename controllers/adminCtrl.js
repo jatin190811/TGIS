@@ -7,7 +7,7 @@ async function login(req, res) {
     if (!req.body.username) {
         return res.json({ status: 'error', error: '001', message: 'Username not found' })
     } else {
-        username = String(req.body.username).toLowerCase().trim()
+        username = String(req.body.username).trim()
     }
 
     if (!req.body.password) {

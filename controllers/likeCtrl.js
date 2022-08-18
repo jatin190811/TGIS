@@ -16,7 +16,7 @@ async function like(req,res) {
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'Type not found' })
     } else {
-        type = String(req.body.type).toLowerCase().trim()
+        type = String(req.body.type).trim()
     }
 
     if (!token) {
@@ -59,7 +59,7 @@ async function unlike(req,res) {
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'Type not found' })
     } else {
-        type = String(req.body.type).toLowerCase().trim()
+        type = String(req.body.type).trim()
     }
 
     if (!token) {
