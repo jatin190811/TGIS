@@ -22,19 +22,19 @@ async function addRating(req, res) {
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'Type not found' })
     } else {
-        type = String(req.body.type).trim()
+        type = String(req.body.type).toLowerCase().trim()
     }
 
     if (!req.body.rating) {
         return res.json({ status: 'error', error: '006', message: 'rating not found' })
     } else {
-        rating = String(req.body.rating).trim()
+        rating = String(req.body.rating).toLowerCase().trim()
     }
 
     if (!req.body.review) {
         review = ''
     } else {
-        review = String(req.body.review).trim()
+        review = String(req.body.review).toLowerCase().trim()
 
     }
 
@@ -83,7 +83,7 @@ async function listRating(req, res) {
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'Type not found' })
     } else {
-        type = String(req.body.type).trim()
+        type = String(req.body.type).toLowerCase().trim()
     }
 
     let collection = await client.db("admin").collection('reviews');
