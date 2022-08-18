@@ -24,19 +24,19 @@ async function doContact(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
     } else {
-        name = String(req.body.name).trim()
+        name = String(req.body.name).toLowerCase().trim()
     }
 
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
-        email = String(req.body.email).trim()
+        email = String(req.body.email).toLowerCase().trim()
     }
 
     if (!req.body.message) {
         return res.json({ status: 'error', error: '006', message: 'message not found' })
     } else {
-        message = String(req.body.message).trim()
+        message = String(req.body.message).toLowerCase().trim()
     }
 
 
@@ -57,13 +57,13 @@ async function doMessage(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
     } else {
-        name = String(req.body.name).trim()
+        name = String(req.body.name).toLowerCase().trim()
     }
 
     if (!req.body.vtype) {
         return res.json({ status: 'error', error: '006', message: 'Vendor type not found' })
     } else {
-        vtype = String(req.body.vtype).trim()
+        vtype = String(req.body.vtype).toLowerCase().trim()
     }
 
 
@@ -76,19 +76,19 @@ async function doMessage(req, res) {
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
-        email = String(req.body.email).trim()
+        email = String(req.body.email).toLowerCase().trim()
     }
 
     if (!req.body.phone) {
         return res.json({ status: 'error', error: '006', message: 'phone number not found' })
     } else {
-        phone = String(req.body.phone).trim()
+        phone = String(req.body.phone).toLowerCase().trim()
     }
 
     if (!req.body.message) {
         message = null
     } else {
-        message = String(req.body.message).trim()
+        message = String(req.body.message).toLowerCase().trim()
     }
 
     if (!req.body.metadata) {
@@ -124,7 +124,7 @@ async function verifymessage(req, res) {
     if (!req.body.otp) {
         return res.json({ status: 'error', error: '025', message: 'OTP not found' })
     } else {
-        otp = String(req.body.otp).trim()
+        otp = String(req.body.otp).toLowerCase().trim()
     }
 
     await client.connect();
