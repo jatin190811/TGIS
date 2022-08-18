@@ -424,8 +424,83 @@ async function deletePlanner(req, res) {
 }
 
 
+
+async function imageUpload(req, res) {
+
+    let collection = await client.db("admin").collection('planners');
+    let id = req.params.id
+
+    if (req.files && req.files.length) {
+        images = req.files.map(i => {
+            const newName = 'decor/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newPath = newName
+
+            console.log(i.path, newPath)
+            fs.renameSync(i.path, "public/"+newPath)
+            return newName
+        })
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $push: {
+            images: images[0]
+        }
+    })
+
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Planner Images successfully Updated', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+
+
+}
+
+
+async function imageDelete(req, res) {
+    let images;
+    let collection = await client.db("admin").collection('planners');
+    let id = req.params.id
+
+    if (req.body.images) {
+        images = req.body.images
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    if (req.body.deletedImage) {
+        deletedImage = req.body.deletedImage
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Deleted image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $set: {
+            images
+        }
+    })
+
+    try {
+        fs.unlinkSync('/public/decor/' + deletedImage)
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Planner Images successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+    }
+    catch (e) {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+
+    }
+}
+
+
 exports.create = createPlanner;
 exports.update = updatePlanner;
 exports.list = listPlanner;
 exports.details = detailPlanner;
 exports.delete = deletePlanner;
+exports.imageUpload = imageUpload;
+exports.imageDelete = imageDelete

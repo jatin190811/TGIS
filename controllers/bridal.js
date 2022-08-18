@@ -439,8 +439,84 @@ async function deleteBridal(req, res) {
 }
 
 
+
+
+async function imageUpload(req, res) {
+
+    let collection = await client.db("admin").collection('bridals');
+    let id = req.params.id
+
+    if (req.files && req.files.length) {
+        images = req.files.map(i => {
+            const newName = 'makeup/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newPath = newName
+
+            console.log(i.path, newPath)
+            fs.renameSync(i.path, "public/"+newPath)
+            return newName
+        })
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $push: {
+            images: images[0]
+        }
+    })
+
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Makeup Images successfully Updated', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+
+
+}
+
+
+async function imageDelete(req, res) {
+    let images;
+    let collection = await client.db("admin").collection('bridals');
+    let id = req.params.id
+
+    if (req.body.images) {
+        images = req.body.images
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    if (req.body.deletedImage) {
+        deletedImage = req.body.deletedImage
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Deleted image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $set: {
+            images
+        }
+    })
+
+    try {
+        fs.unlinkSync('/public/makeup/' + deletedImage)
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Makeup Images successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+    }
+    catch (e) {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+
+    }
+}
+
+
 exports.create = createBridal;
 exports.update = updateBridal;
 exports.list = listBridal;
 exports.details = detailBridal;
 exports.delete = deleteBridal;
+exports.imageUpload = imageUpload;
+exports.imageDelete = imageDelete

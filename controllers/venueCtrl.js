@@ -22,20 +22,7 @@ async function createVenue(req, res) {
 
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('venues');
-    // if (req.files && req.files.length) {
-    //     images = req.files.map(i => {
-    //         const newName = makeid(14) + "." + i.filename.split('.').pop()
-    //         const nameArr = String(i.path).split('/');
-    //         nameArr.pop()
-    //         nameArr.push(newName)
-    //         const newPath = nameArr.join('/')
-    //         fs.renameSync(i.path, newPath)
-    //         return newPath
-    //     })
-    // } else {
-    //     return res.json({ status: 'error', error: '003', message: 'Image not found' })
-    // }
-
+    
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
     } else {
@@ -280,7 +267,6 @@ async function updateVenue(req, res) {
     }
 }
 async function listVenue(req, res) {
-
     let token = req.headers['x-access-token'];
     let appliedFilters = req.body.appliedFilters || false;
     let search = req.body.searchParam || false;
@@ -296,8 +282,12 @@ async function listVenue(req, res) {
     for (let i = 0; i < venues.length; i++) {
 
         let collection = await client.db("admin").collection('reviews');
+
         let cursor = await collection.find({ pid: venues[i]['_id'] })
+
         let reviews = await cursor.toArray();
+        console.log('==+++++++')
+
         let sum = 0
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
@@ -443,8 +433,78 @@ async function deleteVenue(req, res) {
         return res.json({ status: 'error', error: '999', message: 'Token Expired' })
     }
 
+}
 
 
+async function imageUpload(req, res) {
+
+    let collection = await client.db("admin").collection('venues');
+    let id = req.params.id
+
+    if (req.files && req.files.length) {
+        images = req.files.map(i => {
+            const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newPath = newName
+
+            console.log(i.path, newPath)
+            fs.renameSync(i.path, "public/"+newPath)
+            return newName
+        })
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $push: {
+            images: images[0]
+        }
+    })
+
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Venue Images successfully Updated', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+
+
+}
+
+
+async function imageDelete(req, res) {
+    let images;
+    let collection = await client.db("admin").collection('venues');
+    let id = req.params.id
+
+    if (req.body.images) {
+        images = req.body.images
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Image not found' })
+    }
+
+    if (req.body.deletedImage) {
+        deletedImage = req.body.deletedImage
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Deleted image not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $set: {
+            images
+        }
+    })
+
+    try {
+        fs.unlinkSync('/public/venues/' + deletedImage)
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Venue Images successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+    }
+    catch (e) {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+
+    }
 }
 
 
@@ -453,3 +513,5 @@ exports.update = updateVenue;
 exports.list = listVenue;
 exports.details = detailVenue;
 exports.delete = deleteVenue;
+exports.imageUpload = imageUpload;
+exports.imageDelete = imageDelete
