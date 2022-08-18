@@ -598,7 +598,7 @@ async function profilePic(req, res) {
             nameArr.push(newName)
             const newPath = nameArr.join('/')
             fs.renameSync(i.path, newPath)
-            return newPath
+            return newName
         })
     } else {
         return res.json({ status: 'error', error: '003', message: 'Image not found' })
