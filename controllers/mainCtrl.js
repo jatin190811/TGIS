@@ -18,13 +18,13 @@ async function areas(req, res) {
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'Type not found' })
     } else {
-        type = String(req.body.type).toLowerCase().trim()
+        type = String(req.body.type).trim()
     }
 
     if (!req.body.city) {
         return res.json({ status: 'error', error: '006', message: 'City not found' })
     } else {
-        city = String(req.body.city).toLowerCase().trim()
+        city = String(req.body.city).trim()
     }
 
 

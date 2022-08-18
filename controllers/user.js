@@ -22,7 +22,7 @@ async function login(req, res) {
     if (!req.body.username) {
         return res.json({ status: 'error', error: '001', message: 'email or mobile number not found' })
     } else {
-        username = String(req.body.username).toLowerCase().trim()
+        username = String(req.body.username).trim()
     }
 
     if (!req.body.password) {
@@ -82,19 +82,19 @@ async function register(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
-        name = String(req.body.name).toLowerCase().trim()
+        name = String(req.body.name).trim()
     }
 
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
-        email = String(req.body.email).toLowerCase().trim()
+        email = String(req.body.email).trim()
     }
 
     if (!req.body.number) {
         return res.json({ status: 'error', error: '007', message: 'number not found' })
     } else {
-        number = String(req.body.number).toLowerCase().trim()
+        number = String(req.body.number).trim()
     }
 
     if (!req.body.password) {
@@ -140,19 +140,19 @@ async function updateProfile(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
-        name = String(req.body.name).toLowerCase().trim()
+        name = String(req.body.name).trim()
     }
 
     if (!req.body.email) {
         return res.json({ status: 'error', error: '007', message: 'number not found' })
     } else {
-        email = String(req.body.email).toLowerCase().trim()
+        email = String(req.body.email).trim()
     }
 
     if (!req.body.number) {
         return res.json({ status: 'error', error: '007', message: 'number not found' })
     } else {
-        number = String(req.body.number).toLowerCase().trim()
+        number = String(req.body.number).trim()
     }
 
 
@@ -185,7 +185,7 @@ async function frgtPassword(req, res) {
     if (!req.body.username) {
         return res.json({ status: 'error', error: '017', message: 'email or mobile number not found' })
     } else {
-        username = String(req.body.username).toLowerCase().trim()
+        username = String(req.body.username).trim()
     }
 
 
@@ -228,7 +228,7 @@ async function rcvrPassword(req, res) {
     if (!req.body.otp) {
         return res.json({ status: 'error', error: '021', message: 'OTP not found' })
     } else {
-        otp = String(req.body.otp).toLowerCase().trim()
+        otp = String(req.body.otp).trim()
     }
 
     await client.connect();
@@ -296,7 +296,7 @@ async function verifyonboarding(req, res) {
     if (!req.body.otp) {
         return res.json({ status: 'error', error: '025', message: 'OTP not found' })
     } else {
-        otp = String(req.body.otp).toLowerCase().trim()
+        otp = String(req.body.otp).trim()
     }
 
     await client.connect();
@@ -322,7 +322,7 @@ async function verifyregisteration(req, res) {
     if (!req.body.otp) {
         return res.json({ status: 'error', error: '025', message: 'OTP not found' })
     } else {
-        otp = String(req.body.otp).toLowerCase().trim()
+        otp = String(req.body.otp).trim()
     }
 
     await client.connect();
@@ -367,13 +367,13 @@ async function socialSign(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '005', message: 'name not found' })
     } else {
-        name = String(req.body.name).toLowerCase().trim()
+        name = String(req.body.name).trim()
     }
 
     if (!req.body.email) {
         return res.json({ status: 'error', error: '006', message: 'email not found' })
     } else {
-        email = String(req.body.email).toLowerCase().trim()
+        email = String(req.body.email).trim()
     }
 
     if (!req.body.type) {
@@ -447,25 +447,25 @@ async function onboarding(req, res) {
     if (!req.body.personal) {
         return res.json({ status: 'error', error: '011', message: 'Person Type not found' })
     } else {
-        personal = String(req.body.personal).toLowerCase().trim()
+        personal = String(req.body.personal).trim()
     }
 
     if (!req.body.city) {
         return res.json({ status: 'error', error: '012', message: 'City not found' })
     } else {
-        city = String(req.body.city).toLowerCase().trim()
+        city = String(req.body.city).trim()
     }
 
     if (!req.body.date) {
         return res.json({ status: 'error', error: '013', message: 'Date not found' })
     } else {
-        date = String(req.body.date).toLowerCase().trim()
+        date = String(req.body.date).trim()
     }
 
     if (!req.body.budget) {
         return res.json({ status: 'error', error: '014', message: 'Budget not found' })
     } else {
-        budget = String(req.body.budget).toLowerCase().trim()
+        budget = String(req.body.budget).trim()
     }
 
     let collection = await client.db("admin").collection('users');
@@ -506,13 +506,13 @@ async function updatePassword(req, res) {
     if (!req.body.oldpassword) {
         return res.json({ status: 'error', error: '011', message: 'Old Password not found' })
     } else {
-        oldpassword = String(req.body.oldpassword).toLowerCase().trim()
+        oldpassword = String(req.body.oldpassword).trim()
     }
 
     if (!req.body.newpassword) {
         return res.json({ status: 'error', error: '012', message: 'New Password not found' })
     } else {
-        city = String(req.body.city).toLowerCase().trim()
+        city = String(req.body.city).trim()
     }
 
 
