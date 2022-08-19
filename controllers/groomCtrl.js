@@ -318,7 +318,7 @@ async function listGroom(req, res) {
             })
         }
 
-        if (city) {
+        if (city && !appliedFilters['area'])  {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }

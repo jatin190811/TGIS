@@ -335,7 +335,7 @@ async function listVenue(req, res) {
             })
         }
 
-        if (city) {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }
@@ -356,7 +356,7 @@ async function listVenue(req, res) {
                 return contains
             })
         }
-
+        console.log("venues",venues.length)
         if (avgRating) {
             venues = venues.filter(i => {
                 return i['avgRating'] >= avgRating

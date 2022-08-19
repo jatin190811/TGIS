@@ -41,7 +41,7 @@ async function areas(req, res) {
     let cursorIn = collectionIn.find({ "specifications.city": city })
     let obj = await cursorIn.toArray();
     obj.forEach(element => {
-        if (element.specifications.area in areas) {
+        if (areas.indexOf(element.specifications.area) > -1) {
 
         } else {
             areas.push(element.specifications.area)
