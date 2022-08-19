@@ -61,6 +61,8 @@ router.post('/user/pic', upload.array('userPic'), userCtrl.profilePic );
 router.post('/venue/create', venueCtrl.create );
 router.post('/venue/image/upload/:id', upload.array('images'), venueCtrl.imageUpload );
 router.post('/venue/image/delete/:id', venueCtrl.imageDelete );
+router.post('/venue/video/upload/:id', upload.array('videos'), venueCtrl.videoUpload );
+router.post('/venue/video/delete/:id', venueCtrl.videoDelete );
 router.post('/venue/update', venueCtrl.update );
 router.post('/venues',  venueCtrl.list );
 router.post('/venue/:id',  venueCtrl.details );
@@ -70,6 +72,8 @@ router.post('/venue/delete/:id',  venueCtrl.delete );
 router.post('/bridal-makeup/create', bridalCtrl.create );
 router.post('/bridal-makeup/image/upload/:id', upload.array('images'), bridalCtrl.imageUpload );
 router.post('/bridal-makeup/image/delete/:id', bridalCtrl.imageDelete );
+router.post('/bridal-makeup/video/upload/:id', upload.array('videos'), bridalCtrl.videoUpload );
+router.post('/bridal-makeup/video/delete/:id', bridalCtrl.videoDelete );
 router.post('/bridal-makeup/update', bridalCtrl.update );
 router.post('/bridal-makeups',  bridalCtrl.list );
 router.post('/bridal-makeup/:id',  bridalCtrl.details );
@@ -78,6 +82,8 @@ router.post('/bridal-makeup/delete/:id',  bridalCtrl.delete );
 router.post('/bridal-wear/create',bridalwearCtrl.create );
 router.post('/bridal-wear/image/upload/:id', upload.array('images'), bridalwearCtrl.imageUpload );
 router.post('/bridal-wear/image/delete/:id', bridalwearCtrl.imageDelete );
+router.post('/bridal-wear/video/upload/:id', upload.array('videos'), bridalwearCtrl.videoUpload );
+router.post('/bridal-wear/video/delete/:id', bridalwearCtrl.videoDelete );
 router.post('/bridal-wear/update', bridalwearCtrl.update );
 router.post('/bridal-wears',  bridalwearCtrl.list );
 router.post('/bridal-wear/:id',  bridalwearCtrl.details );
@@ -86,6 +92,8 @@ router.post('/bridal-wear/delete/:id',  bridalwearCtrl.delete );
 router.post('/photographer/create', photographerCtrl.create );
 router.post('/photographer/image/upload/:id', upload.array('images'), photographerCtrl.imageUpload );
 router.post('/photographer/image/delete/:id', photographerCtrl.imageDelete );
+router.post('/photographer/video/upload/:id', upload.array('videos'), photographerCtrl.videoUpload );
+router.post('/photographer/video/delete/:id', photographerCtrl.videoDelete );
 router.post('/photographer/update', photographerCtrl.update );
 router.post('/photographers',  photographerCtrl.list );
 router.post('/photographer/:id',  photographerCtrl.details );
@@ -94,6 +102,8 @@ router.post('/photographer/delete/:id',  photographerCtrl.delete );
 router.post('/groom/create',  groomCtrl.create );
 router.post('/groom/image/upload/:id', upload.array('images'), groomCtrl.imageUpload );
 router.post('/groom/image/delete/:id', groomCtrl.imageDelete );
+router.post('/venue/video/upload/:id', upload.array('videos'), groomCtrl.videoUpload );
+router.post('/venue/video/delete/:id', groomCtrl.videoDelete );
 router.post('/groom/update', groomCtrl.update );
 router.post('/groom',  groomCtrl.list );
 router.post('/groom/:id',  groomCtrl.details );
@@ -102,6 +112,8 @@ router.post('/groom/delete/:id',  groomCtrl.delete );
 router.post('/mehndi/create',mehndiCtrl.create );
 router.post('/mehndi/image/upload/:id', upload.array('images'), mehndiCtrl.imageUpload );
 router.post('/mehndi/image/delete/:id', mehndiCtrl.imageDelete );
+router.post('/mehndi/video/upload/:id', upload.array('videos'), mehndiCtrl.videoUpload );
+router.post('/mehndi/video/delete/:id', mehndiCtrl.videoDelete );
 router.post('/mehndi/update', mehndiCtrl.update );
 router.post('/mehndi',  mehndiCtrl.list );
 router.post('/mehndi/:id',  mehndiCtrl.details );
@@ -110,6 +122,8 @@ router.post('/mehndi/delete/:id',  mehndiCtrl.delete );
 router.post('/planner/create',  plannerCtrl.create );
 router.post('/planner/image/upload/:id', upload.array('images'), plannerCtrl.imageUpload );
 router.post('/planner/image/delete/:id', plannerCtrl.imageDelete );
+router.post('/planner/video/upload/:id', upload.array('videos'), plannerCtrl.videoUpload );
+router.post('/planner/video/delete/:id', plannerCtrl.videoDelete );
 router.post('/planner/update', plannerCtrl.update );
 router.post('/planner',  plannerCtrl.list );
 router.post('/planner/:id',  plannerCtrl.details );
@@ -123,6 +137,12 @@ router.get('/categories',  catsCtrl.list );
 router.get('/inhouse',  inhouseCtrl.list );
 
 router.get('/vendors',  vendorCtrl.list );
+router.post('/vendors/request',  vendorCtrl.request );
+router.post('/vendors/requests',  vendorCtrl.requestList );
+router.post('/vendors/delete/:id', adminCtrl.delete)
+
+
+
 router.get('/videos',  vendorCtrl.videos );
 router.get('/images',  vendorCtrl.images );
 
@@ -151,6 +171,8 @@ router.post('/areas', mainCtrl.areas)
 /* admin */
 
 router.post('/admin/login', adminCtrl.login)
+router.post('/admin/users', adminCtrl.users)
+router.post('/admin/delete/:id', adminCtrl.delete)
 
 
 module.exports = router
