@@ -155,7 +155,92 @@ async function imagesList(req, res) {
     return res.json({ status: 'success', message: '', data: images })
 }
 
+
+async function requestVenddor(req, res) {
+    let brand_name, city, type, email, phone
+
+    let token = req.headers['x-access-token'];
+    let collection = await client.db("admin").collection('vendor_requests');
+    
+    if (!req.body.brand_name) {
+        return res.json({ status: 'error', error: '006', message: 'Brand Name not found' })
+    } else {
+        brand_name = String(req.body.brand_name).trim()
+    }
+
+    if (!req.body.city) {
+        return res.json({ status: 'error', error: '006', message: 'City not found' })
+    } else {
+        city = String(req.body.city).trim()
+    }
+
+
+    if (!req.body.type) {
+        return res.json({ status: 'error', error: '006', message: 'Type not found' })
+    } else {
+        type = String(req.body.type).trim()
+    }
+
+
+    if (!req.body.email) {
+        return res.json({ status: 'error', error: '006', message: 'Email not found' })
+    } else {
+        email = String(req.body.email).trim()
+    }
+
+    if (!req.body.phone) {
+        return res.json({ status: 'error', error: '006', message: 'Phone number not found' })
+    } else {
+        phone = String(req.body.phone).trim()
+    }
+
+
+
+    let result = await collection.insertOne({
+        brand_name, city, type, email, phone,
+        createTime: Date.now(),
+        isDeleted: false
+    })
+
+    if (result.acknowledged) {
+        return res.json({ status: 'success', message: 'Message successfully Sent', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+}
+
+
+
+async function requestList(req, res) {
+    let collection, cursor
+    collection = await client.db("admin").collection('vendor_requests');
+    cursor = collection.find({})
+    let requests = await cursor.toArray()
+    requests = requests.filter(i=>i.isDeleted!=true)
+    return res.json({ status: 'success', message: '', data: requests })
+}
+
+
+
+async function deleteReq(req, res) {
+
+    await client.connect();
+    let id = req.params.id;
+    let collection = await client.db("admin").collection('vendor_requests');
+   
+    let result = await collection.updateOne({ _id: ObjectId(id) }, { $set: { isDeleted: true } })
+    if (result.acknowledged) {
+        return res.json({ status: 'success', message: 'Requests Deleted Successfully', data: { } })
+    } else {
+        return res.json({ status: 'error', error: '018', message: 'Something went wrong' })
+    }
+
+}
+
 exports.list = listVendors;
 exports.videos = videosList;
 exports.images = imagesList;
 exports.searchVendors = searchVendors;
+exports.request = requestVenddor;
+exports.requestList = requestList;
+exports.deleteReq = deleteReq;

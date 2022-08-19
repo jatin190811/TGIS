@@ -24,40 +24,40 @@ async function createPhotographer(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
     } else {
-        name = String(req.body.name).toLowerCase().trim()
+        name = String(req.body.name).trim()
     }
 
     if (!req.body.price) {
         return res.json({ status: 'error', error: '006', message: 'price not found' })
     } else {
-        price = String(req.body.price).toLowerCase().trim()
+        price = String(req.body.price).trim()
     }
 
 
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'type not found' })
     } else {
-        type = String(req.body.type).toLowerCase().trim()
+        type = String(req.body.type).trim()
     }
 
 
     if (!req.body.sub_cat) {
         return res.json({ status: 'error', error: '006', message: 'sub type not found' })
     } else {
-        sub_cat = String(req.body.sub_cat).toLowerCase().trim()
+        sub_cat = String(req.body.sub_cat).trim()
     }
 
     if (!req.body.description) {
         return res.json({ status: 'error', error: '006', message: 'description not found' })
     } else {
-        description = String(req.body.description).toLowerCase().trim()
+        description = String(req.body.description).trim()
     }
 
 
     if (!req.body.address) {
         return res.json({ status: 'error', error: '006', message: 'address not found' })
     } else {
-        address = String(req.body.address).toLowerCase().trim()
+        address = String(req.body.address).trim()
     }
 
     if (!req.body.tags || req.body.tags.length<1 ) {
@@ -150,40 +150,40 @@ async function updatePhotographer(req, res) {
     if (!req.body.name) {
         return res.json({ status: 'error', error: '006', message: 'name not found' })
     } else {
-        name = String(req.body.name).toLowerCase().trim()
+        name = String(req.body.name).trim()
     }
 
     if (!req.body.price) {
         return res.json({ status: 'error', error: '006', message: 'price not found' })
     } else {
-        price = String(req.body.price).toLowerCase().trim()
+        price = String(req.body.price).trim()
     }
 
 
     if (!req.body.type) {
         return res.json({ status: 'error', error: '006', message: 'type not found' })
     } else {
-        type = String(req.body.type).toLowerCase().trim()
+        type = String(req.body.type).trim()
     }
 
 
     if (!req.body.sub_cat) {
         return res.json({ status: 'error', error: '006', message: 'sub type not found' })
     } else {
-        sub_cat = String(req.body.sub_cat).toLowerCase().trim()
+        sub_cat = String(req.body.sub_cat).trim()
     }
 
     if (!req.body.description) {
         return res.json({ status: 'error', error: '006', message: 'description not found' })
     } else {
-        description = String(req.body.description).toLowerCase().trim()
+        description = String(req.body.description).trim()
     }
 
 
     if (!req.body.address) {
         return res.json({ status: 'error', error: '006', message: 'address not found' })
     } else {
-        address = String(req.body.address).toLowerCase().trim()
+        address = String(req.body.address).trim()
     }
 
     if (!req.body.tags || req.body.tags.length < 1) {
@@ -491,6 +491,77 @@ async function imageDelete(req, res) {
 }
 
 
+async function videoUpload(req, res) {
+
+    let collection = await client.db("admin").collection('photographers');
+    let id = req.params.id
+
+    if (req.files && req.files.length) {
+        videos = req.files.map(i => {
+            const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newPath = newName
+
+            console.log(i.path, newPath)
+            fs.renameSync(i.path, "public/"+newPath)
+            return newName
+        })
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Video not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $push: {
+            videos: videos[0]
+        }
+    })
+
+    if (result.modifiedCount) {
+        return res.json({ status: 'success', message: 'Photographer Videos successfully Updated', data: {} })
+    } else {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+    }
+
+
+}
+
+
+async function videoDelete(req, res) {
+    let videos;
+    let collection = await client.db("admin").collection('photographers');
+    let id = req.params.id
+
+    if (req.body.videos) {
+        videos = req.body.videos
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Video not found' })
+    }
+
+    if (req.body.deletedVideo) {
+        deletedVideo = req.body.deletedVideo
+    } else {
+        return res.json({ status: 'error', error: '003', message: 'Deleted video not found' })
+    }
+
+    let result = await collection.updateOne({ _id: ObjectId(id) }, {
+        $set: {
+            videos
+        }
+    })
+
+    try {
+        fs.unlinkSync('/public/venues/' + deletedVideo)
+        if (result.modifiedCount) {
+            return res.json({ status: 'success', message: 'Photographer Videos successfully Updated', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+    }
+    catch (e) {
+        return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+
+    }
+}
+
 exports.create = createPhotographer;
 exports.update = updatePhotographer
 exports.list = listPhotographer;
@@ -498,3 +569,6 @@ exports.details = detailPhotographer;
 exports.delete = deletePhotographer;
 exports.imageUpload = imageUpload;
 exports.imageDelete = imageDelete
+
+exports.videoUpload = videoUpload;
+exports.videoDelete = videoDelete
