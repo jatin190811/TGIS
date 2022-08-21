@@ -300,7 +300,7 @@ async function verifyonboarding(req, res) {
     }
 
     await client.connect();
-    let collection = await client.db("admin").collection('vendors');
+    let collection = await client.db("admin").collection('users');
     let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { otp: otp }] }, { $set: { 'active': true } })
     if (result.modifiedCount) {
 
