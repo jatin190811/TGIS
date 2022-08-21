@@ -40,7 +40,7 @@ async function login(req, res) {
         collection = await client.db("admin").collection('vendors');
     }
 
-    let cursor = collection.find({ $or: [{ $and: [{ email: username }, { password: password }, {$ne: {isDeleted: true} }] }, { $and: [{ number: username }, { password: password },{$ne: {isDeleted: true} }] }] })
+    let cursor = collection.find({ $or: [{ $and: [{ email: username }, { password: password }, {isDeleted: {$ne: true} }] }, { $and: [{ number: username }, { password: password },{isDeleted: {$ne: true} }] }] })
     let user = await cursor.toArray()
     if (user.length) {
         if (!user[0].active) {
@@ -107,7 +107,7 @@ async function register(req, res) {
     let collection = await client.db("admin").collection('users');
 
 
-    let cursor = collection.find({ $and: [{ $or: [{ email: email }, { number: number }], isDeleted: true }] })
+    let cursor = collection.find({ $and: [{ $or: [{ email: email }, { number: number }], isDeleted: {$ne: true} }] })
     let user = await cursor.toArray()
     if (user.length) {
         return res.json({ status: 'error', error: '027', message: 'Email or Mobile Number already exist' })
