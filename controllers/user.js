@@ -303,17 +303,7 @@ async function verifyonboarding(req, res) {
     let collection = await client.db("admin").collection('users');
     let result = await collection.updateOne({ $and: [{ _id: new ObjectId(ref) }, { otp: otp }] }, { $set: { 'active': true } })
     if (result.modifiedCount) {
-
-
-        let cursor = collection.find({ _id: new ObjectId(ref) })
-        let user = await cursor.toArray()
-        let token = jwt.sign({ name: user[0]['name'], id: user[0]['_id'] }, 'P!yush@1994');
-        
-
-        return res.json({ status: 'success', message: 'Account Successfully created', data: {
-            token,
-            profile : user[0]
-        } })
+        return res.json({ status: 'success', message: 'Account Successfully created', data: {} })
     } else {
         return res.json({ status: 'error', error: '026', message: 'Invalid Otp' })
     }

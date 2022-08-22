@@ -318,7 +318,7 @@ async function listGroom(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area'])  {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }
@@ -344,6 +344,8 @@ async function listGroom(req, res) {
                 return i['avgRating'] >= avgRating
             })
         }
+
+
         return res.json({ status: 'success', message: grooms.length + ' results found', data: grooms, filters: filtersList.groomWear })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom wear found' })
@@ -384,6 +386,20 @@ async function detailGroom(req, res) {
             grooms[i]['liked'] = false
         }
 
+
+
+        let i = 0;
+        collection = await client.db("admin").collection('reviews');
+        cursor = await collection.find({ pid: grooms[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
+        })
+        grooms[i]['avgRating'] = totalRating / grooms.length
+        if (!grooms[i]['avgRating']) grooms[i]['avgRating'] = 0
+        grooms[i]['reviews'] = reviews
+ 
         return res.json({ status: 'success', message: '', data: grooms[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Groom found' })
@@ -495,7 +511,7 @@ async function videoUpload(req, res) {
 
     if (req.files && req.files.length) {
         videos = req.files.map(i => {
-            const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newName = 'groomwears/'+makeid(14) + "." + i.filename.split('.').pop()
             const newPath = newName
 
             console.log(i.path, newPath)
@@ -546,7 +562,7 @@ async function videoDelete(req, res) {
     })
 
     try {
-        fs.unlinkSync('/public/venues/' + deletedVideo)
+        fs.unlinkSync('/public/groomwears/' + deletedVideo)
         if (result.modifiedCount) {
             return res.json({ status: 'success', message: 'Groomwear Videos successfully Updated', data: {} })
         } else {

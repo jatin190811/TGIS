@@ -321,7 +321,7 @@ async function listMehndi(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area'])  {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }
@@ -389,6 +389,19 @@ async function detailMehndi(req, res) {
             mehndis[i]['liked'] = false
         }
 
+
+        let i = 0;
+        collection = await client.db("admin").collection('reviews');
+        cursor = await collection.find({ pid: mehndis[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
+        })
+        mehndis[i]['avgRating'] = totalRating / mehndis.length
+        if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0
+        mehndis[i]['reviews'] = reviews
+ 
         return res.json({ status: 'success', message: '', data: mehndis[0] })
     } else {
         return res.json({ status: 'error', error: '019', message: 'No such Mehndi found' })
@@ -499,7 +512,7 @@ async function videoUpload(req, res) {
 
     if (req.files && req.files.length) {
         videos = req.files.map(i => {
-            const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newName = 'mehandis/'+makeid(14) + "." + i.filename.split('.').pop()
             const newPath = newName
 
             console.log(i.path, newPath)
@@ -550,7 +563,7 @@ async function videoDelete(req, res) {
     })
 
     try {
-        fs.unlinkSync('/public/venues/' + deletedVideo)
+        fs.unlinkSync('/public/mehandis/' + deletedVideo)
         if (result.modifiedCount) {
             return res.json({ status: 'success', message: 'Mehndi Videos successfully Updated', data: {} })
         } else {

@@ -356,7 +356,7 @@ async function listVenue(req, res) {
                 return contains
             })
         }
-        console.log("venues",venues.length)
+
         if (avgRating) {
             venues = venues.filter(i => {
                 return i['avgRating'] >= avgRating
@@ -406,6 +406,21 @@ async function detailVenue(req, res) {
             let i = 0
             venues[i]['liked'] = false
         }
+
+
+
+        let i = 0;
+        collection = await client.db("admin").collection('reviews');
+        cursor = await collection.find({ pid: venues[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
+        })
+        venues[i]['avgRating'] = totalRating / venues.length
+        if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
+        venues[i]['reviews'] = reviews
+ 
 
         return res.json({ status: 'success', message: '', data: venues[0] })
     } else {

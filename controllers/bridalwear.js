@@ -324,7 +324,7 @@ async function listBridal(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area'])  {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }
@@ -389,6 +389,19 @@ async function detailBridal(req, res) {
             let i = 0;
             bridals[i]['liked'] = false
         }
+
+        let i = 0;
+        collection = await client.db("admin").collection('reviews');
+        cursor = await collection.find({ pid: bridals[i]['_id'] })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
+        })
+        bridals[i]['avgRating'] = totalRating / bridals.length
+        if (!bridals[i]['avgRating']) bridals[i]['avgRating'] = 0
+        bridals[i]['reviews'] = reviews
+ 
 
         return res.json({ status: 'success', message: '', data: bridals[0] })
     } else {
@@ -501,7 +514,7 @@ async function videoUpload(req, res) {
 
     if (req.files && req.files.length) {
         videos = req.files.map(i => {
-            const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
+            const newName = 'bridalwears/'+makeid(14) + "." + i.filename.split('.').pop()
             const newPath = newName
 
             console.log(i.path, newPath)
@@ -552,7 +565,7 @@ async function videoDelete(req, res) {
     })
 
     try {
-        fs.unlinkSync('/public/venues/' + deletedVideo)
+        fs.unlinkSync('/public/bridalwears/' + deletedVideo)
         if (result.modifiedCount) {
             return res.json({ status: 'success', message: 'Bridal wear Videos successfully Updated', data: {} })
         } else {

@@ -324,7 +324,7 @@ async function listPlanner(req, res) {
         }
 
 
-        if (city && !appliedFilters['area'])  {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }

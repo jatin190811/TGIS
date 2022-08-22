@@ -321,7 +321,7 @@ async function listPhotographer(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area'])  {
+        if (city && !appliedFilters['area']) {
             appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
             appliedFilters['city'] = city
         }
@@ -376,6 +376,9 @@ async function detailPhotographer(req, res) {
             if (user.length) {
                 let collection = await client.db("admin").collection('likes');
                 let cursor = await collection.find({ uid: user[0]['_id'], pid: photographers[i]['_id'], type: 'photographer' })
+
+                
+
                 let likes = await cursor.toArray();
                 if (likes.length) {
                     photographers[i]['liked'] = true
@@ -387,6 +390,19 @@ async function detailPhotographer(req, res) {
             let i = 0
             photographers[i]['liked'] = false
         }
+
+       let i = 0;
+       collection = await client.db("admin").collection('reviews');
+       cursor = await collection.find({ pid: photographers[i]['_id'] })
+       let reviews = await cursor.toArray();
+       let sum = 0
+       totalRating = reviews.forEach((item) => {
+           sum += number(item.rating)
+       })
+       photographers[i]['avgRating'] = totalRating / photographers.length
+       if (!photographers[i]['avgRating']) photographers[i]['avgRating'] = 0
+       photographers[i]['reviews'] = reviews
+
 
         return res.json({ status: 'success', message: '', data: photographers[0] })
     } else {
