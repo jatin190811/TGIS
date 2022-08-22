@@ -280,7 +280,7 @@ async function listGroom(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        grooms[i]['avgRating'] = sum / grooms.length
+        grooms[i]['avgRating'] = sum / reviews.length
         if (!grooms[i]['avgRating']) grooms[i]['avgRating'] = 0
 
 
@@ -396,7 +396,7 @@ async function detailGroom(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        grooms[i]['avgRating'] = sum / grooms.length
+        grooms[i]['avgRating'] = sum / reviews.length
         if (!grooms[i]['avgRating']) grooms[i]['avgRating'] = 0
         grooms[i]['reviews'] = reviews
  

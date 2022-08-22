@@ -282,7 +282,7 @@ async function listPhotographer(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        photographers[i]['avgRating'] = sum / photographers.length
+        photographers[i]['avgRating'] = sum / reviews.length
         if (!photographers[i]['avgRating']) photographers[i]['avgRating'] = 0
 
 
@@ -399,7 +399,7 @@ async function detailPhotographer(req, res) {
        totalRating = reviews.forEach((item) => {
            sum += number(item.rating)
        })
-       photographers[i]['avgRating'] = sum / photographers.length
+       photographers[i]['avgRating'] = sum / reviews.length
        if (!photographers[i]['avgRating']) photographers[i]['avgRating'] = 0
        photographers[i]['reviews'] = reviews
 

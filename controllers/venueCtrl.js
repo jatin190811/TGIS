@@ -291,7 +291,7 @@ async function listVenue(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        venues[i]['avgRating'] = sum / venues.length
+        venues[i]['avgRating'] = sum / reviews.length
         if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
 
         if (token) {
@@ -411,7 +411,7 @@ async function detailVenue(req, res) {
         reviews.forEach((item) => {
             sum += Number(item.rating)
         })
-        venues[i]['avgRating'] = sum / venues.length
+        venues[i]['avgRating'] = sum / reviews.length
         if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
         venues[i]['reviews'] = reviews
  

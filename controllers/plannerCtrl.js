@@ -285,7 +285,7 @@ async function listPlanner(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        planners[i]['avgRating'] = sum / planners.length
+        planners[i]['avgRating'] = sum / reviews.length
         if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
 
 
@@ -399,7 +399,7 @@ async function detailPlanner(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        planners[i]['avgRating'] = sum / planners.length
+        planners[i]['avgRating'] = sum / reviews.length
         if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
         planners[i]['reviews'] = reviews
  

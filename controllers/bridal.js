@@ -296,7 +296,7 @@ async function listBridal(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        bridals[i]['avgRating'] = sum / bridals.length
+        bridals[i]['avgRating'] = sum / reviews.length
         if (!bridals[i]['avgRating']) bridals[i]['avgRating'] = 0
 
 
@@ -414,7 +414,7 @@ async function detailBridal(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        bridals[i]['avgRating'] = sum / bridals.length
+        bridals[i]['avgRating'] = sum / reviews.length
         if (!bridals[i]['avgRating']) bridals[i]['avgRating'] = 0
         bridals[i]['reviews'] = reviews
  

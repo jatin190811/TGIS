@@ -281,7 +281,7 @@ async function listMehndi(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        mehndis[i]['avgRating'] = sum / mehndis.length
+        mehndis[i]['avgRating'] = sum / reviews.length
         if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0
 
 
@@ -398,7 +398,7 @@ async function detailMehndi(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        mehndis[i]['avgRating'] = sum / mehndis.length
+        mehndis[i]['avgRating'] = sum / reviews.length
         if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0
         mehndis[i]['reviews'] = reviews
  
