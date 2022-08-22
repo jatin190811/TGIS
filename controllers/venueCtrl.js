@@ -286,17 +286,13 @@ async function listVenue(req, res) {
         let cursor = await collection.find({ pid: venues[i]['_id'] })
 
         let reviews = await cursor.toArray();
-        console.log('==+++++++')
-
+     
         let sum = 0
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        venues[i]['avgRating'] = totalRating / venues.length
+        venues[i]['avgRating'] = sum / venues.length
         if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
-
-
-
 
         if (token) {
 
@@ -371,15 +367,13 @@ async function listVenue(req, res) {
 }
 
 async function detailVenue(req, res) {
-
     let token = req.headers['x-access-token'];
     let collection = await client.db("admin").collection('venues');
     let id = req.params.id
     let cursor = collection.find({ _id: ObjectId(id) })
     let venues = await cursor.toArray()
+
     if (venues.length) {
-
-
         cursor = collection.find({ tags: { $in: venues[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
         console.log(venues[0]['tags'])
@@ -411,13 +405,13 @@ async function detailVenue(req, res) {
 
         let i = 0;
         collection = await client.db("admin").collection('reviews');
-        cursor = await collection.find({ pid: venues[i]['_id'] })
+        cursor = await collection.find({ pid: String(venues[i]['_id']) })
         let reviews = await cursor.toArray();
         let sum = 0
-        totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+        reviews.forEach((item) => {
+            sum += Number(item.rating)
         })
-        venues[i]['avgRating'] = totalRating / venues.length
+        venues[i]['avgRating'] = sum / venues.length
         if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
         venues[i]['reviews'] = reviews
  
@@ -461,7 +455,6 @@ async function imageUpload(req, res) {
             const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
             const newPath = newName
 
-            console.log(i.path, newPath)
             fs.renameSync(i.path, "public/"+newPath)
             return newName
         })
@@ -533,7 +526,6 @@ async function videoUpload(req, res) {
             const newName = 'venues/'+makeid(14) + "." + i.filename.split('.').pop()
             const newPath = newName
 
-            console.log(i.path, newPath)
             fs.renameSync(i.path, "public/"+newPath)
             return newName
         })

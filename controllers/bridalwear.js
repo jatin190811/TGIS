@@ -283,7 +283,7 @@ async function listBridal(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        bridals[i]['avgRating'] = totalRating / bridals.length
+        bridals[i]['avgRating'] = sum / bridals.length
         if (!bridals[i]['avgRating']) bridals[i]['avgRating'] = 0
 
 
@@ -392,13 +392,13 @@ async function detailBridal(req, res) {
 
         let i = 0;
         collection = await client.db("admin").collection('reviews');
-        cursor = await collection.find({ pid: bridals[i]['_id'] })
+        cursor = await collection.find({ pid: String(bridals[i]['_id']) })
         let reviews = await cursor.toArray();
         let sum = 0
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        bridals[i]['avgRating'] = totalRating / bridals.length
+        bridals[i]['avgRating'] = sum / bridals.length
         if (!bridals[i]['avgRating']) bridals[i]['avgRating'] = 0
         bridals[i]['reviews'] = reviews
  

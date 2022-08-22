@@ -282,7 +282,7 @@ async function listPhotographer(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        photographers[i]['avgRating'] = totalRating / photographers.length
+        photographers[i]['avgRating'] = sum / photographers.length
         if (!photographers[i]['avgRating']) photographers[i]['avgRating'] = 0
 
 
@@ -393,13 +393,13 @@ async function detailPhotographer(req, res) {
 
        let i = 0;
        collection = await client.db("admin").collection('reviews');
-       cursor = await collection.find({ pid: photographers[i]['_id'] })
+       cursor = await collection.find({ pid: String(photographers[i]['_id']) })
        let reviews = await cursor.toArray();
        let sum = 0
        totalRating = reviews.forEach((item) => {
            sum += number(item.rating)
        })
-       photographers[i]['avgRating'] = totalRating / photographers.length
+       photographers[i]['avgRating'] = sum / photographers.length
        if (!photographers[i]['avgRating']) photographers[i]['avgRating'] = 0
        photographers[i]['reviews'] = reviews
 

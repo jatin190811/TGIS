@@ -285,7 +285,7 @@ async function listPlanner(req, res) {
         totalRating = reviews.forEach((item) => {
             sum += number(item.rating)
         })
-        planners[i]['avgRating'] = totalRating / planners.length
+        planners[i]['avgRating'] = sum / planners.length
         if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
 
 
@@ -390,6 +390,20 @@ async function detailPlanner(req, res) {
             let i = 0
             planners[i]['liked'] = false
         }
+
+        let i = 0;
+        collection = await client.db("admin").collection('reviews');
+        cursor = await collection.find({ pid: String(planners[i]['_id']) })
+        let reviews = await cursor.toArray();
+        let sum = 0
+        totalRating = reviews.forEach((item) => {
+            sum += number(item.rating)
+        })
+        planners[i]['avgRating'] = sum / planners.length
+        if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
+        planners[i]['reviews'] = reviews
+ 
+
 
         return res.json({ status: 'success', message: '', data: planners[0] })
     } else {
