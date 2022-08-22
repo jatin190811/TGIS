@@ -323,11 +323,6 @@ async function listPlanner(req, res) {
             })
         }
 
-
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
         
         if (appliedFilters) {
             planners = planners.filter(i => {
@@ -344,6 +339,12 @@ async function listPlanner(req, res) {
                 return contains
             })
         }
+
+        if (city && !appliedFilters['area']) {
+            planners = planners.filter(i=> i.specifications?.city == city )
+        }
+
+
         if (avgRating) {
             planners = planners.filter(i => {
                 return i['avgRating'] >= avgRating

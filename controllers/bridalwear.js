@@ -324,10 +324,7 @@ async function listBridal(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
+    
 
         if (appliedFilters) {
             bridals = bridals.filter(i => {
@@ -344,6 +341,10 @@ async function listBridal(req, res) {
                 return contains
             })
         }
+        if (city && !appliedFilters['area']) {
+            bridals = bridals.filter(i=> i.specifications?.city == city )
+        }
+
         if (avgRating) {
             bridals = bridals.filter(i => {
                 return i['avgRating'] >= avgRating

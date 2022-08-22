@@ -318,10 +318,7 @@ async function listGroom(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
+       
 
         if (appliedFilters) {
 
@@ -339,6 +336,11 @@ async function listGroom(req, res) {
                 return contains
             })
         }
+        
+        if (city && !appliedFilters['area']) {
+            grooms = grooms.filter(i=> i.specifications?.city == city )
+        }
+
         if (avgRating) {
             grooms = grooms.filter(i => {
                 return i['avgRating'] >= avgRating

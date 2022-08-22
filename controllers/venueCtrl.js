@@ -279,6 +279,9 @@ async function listVenue(req, res) {
     let cursor = collection.find({ isDeleted: false })
     let venues = await cursor.toArray()
 
+   
+           
+
     for (let i = 0; i < venues.length; i++) {
 
         let collection = await client.db("admin").collection('reviews');
@@ -300,6 +303,7 @@ async function listVenue(req, res) {
             let cursor = collection.find({ token })
             let user = await cursor.toArray();
 
+        
             if (user.length) {
                 let collection = await client.db("admin").collection('likes');
                 let cursor = await collection.find({ uid: user[0]['_id'], pid: venues[i]['_id'], type: 'venue' })
@@ -319,6 +323,10 @@ async function listVenue(req, res) {
 
 
     if (venues) {
+
+      
+
+
         if (search) {
             venues = venues.filter(i => {
                 return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
@@ -331,28 +339,34 @@ async function listVenue(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
-
 
         if (appliedFilters) {
             venues = venues.filter(i => {
                 let contains = false;
-
+                
                 Object.keys(appliedFilters).forEach(filter => {
+                 
+      
                     if (i.specifications && i.specifications[filter]) {
+                        console.log(1,i.name, appliedFilters[filter].includes(i.specifications[filter]) ,'======')
                         if (appliedFilters[filter].includes(i.specifications[filter])) {
-                            contains = true
+                           contains = true
                         }
 
                     }
                 })
+                console.log(i.name, contains ,'======')
                 return contains
             })
         }
 
+
+        if (city && !appliedFilters['area']) {
+            venues = venues.filter(i=> i.specifications?.city == city )
+        }
+
+      
+                        
         if (avgRating) {
             venues = venues.filter(i => {
                 return i['avgRating'] >= avgRating

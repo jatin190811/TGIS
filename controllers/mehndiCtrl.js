@@ -321,10 +321,6 @@ async function listMehndi(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
 
         if (appliedFilters) {
             mehndis = mehndis.filter(i => {
@@ -340,6 +336,10 @@ async function listMehndi(req, res) {
                 })
                 return contains
             })
+        }
+
+        if (city && !appliedFilters['area']) {
+            mehndis = mehndis.filter(i=> i.specifications?.city == city )
         }
 
         if (avgRating) {

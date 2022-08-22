@@ -321,10 +321,7 @@ async function listPhotographer(req, res) {
             })
         }
 
-        if (city && !appliedFilters['area']) {
-            appliedFilters ? appliedFilters['city'] = city : appliedFilters = { city }
-            appliedFilters['city'] = city
-        }
+      
 
 
         if (appliedFilters) {
@@ -342,6 +339,12 @@ async function listPhotographer(req, res) {
                 return contains
             })
         }
+
+        if (city && !appliedFilters['area']) {
+            photographers = photographers.filter(i=> i.specifications?.city == city )
+        }
+
+
         if (avgRating) {
             photographers = photographers.filter(i => {
                 return i['avgRating'] >= avgRating
