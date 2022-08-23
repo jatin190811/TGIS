@@ -46,7 +46,7 @@ async function addRating(req, res) {
     if (user.length) {
         let _id = user[0]['_id']
         let collection = await client.db("admin").collection('reviews');
-        let result = await collection.insertOne({ uid: _id, pid, type, rating, review, name: user[0]['name'], currentDate: new Date().toLocaleString() , pic: user[0]['profilePic']    })
+        let result = await collection.insertOne({ uid: _id, pid, type, rating, review, name: user[0]['name'], currentDate: new Date().toLocaleString(), pic: user[0]['profilePic'] })
         if (result.acknowledged) {
             return res.json({ status: 'success', message: 'Successfully added', data: {} })
         } else {
@@ -109,5 +109,55 @@ async function listRating(req, res) {
     }
 
 }
+
+async function subscribe(req, res) {
+
+
+    if (!req.body.email) {
+        return res.json({ status: 'error', error: '006', message: 'Email not found' })
+    } else {
+        email = String(req.body.email).trim()
+    }
+
+
+    let collection = await client.db("admin").collection('subscribers');
+    let cursor = collection.find({ email })
+    let subscribers = await cursor.toArray();
+
+    if (!!subscribers.length) {
+        let _id = user[0]['_id']
+        let result = await collection.insertOne({ email })
+        if (result.acknowledged) {
+            return res.json({ status: 'success', message: 'Successfully Subscribed', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+
+    } else {
+        return res.json({ status: 'success', data: {}, message: 'Already Subscribed' })
+    }
+
+
+
+
+}
+
+
+
+
+async function appFound(req, res) {
+
+    if (!req.body.phone) {
+        return res.json({ status: 'error', error: '006', message: 'Phone Number not found' })
+    } else {
+        phone = String(req.body.phone).trim()
+    }
+
+    return res.json({ status: 'success', message: 'Successfully Subscribed', data: {} })
+}
+
+
 exports.add = addRating
 exports.list = listRating
+exports.subscribe = subscribe
+exports.appFound = appFound

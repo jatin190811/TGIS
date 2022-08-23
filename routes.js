@@ -166,6 +166,9 @@ router.post('/list-rating', ratingCtrl.list)
 router.post('/cities', mainCtrl.cities)
 router.post('/areas', mainCtrl.areas)
 
+router.post('/subscribe', ratingCtrl.subscribe)
+router.post('/app-link', ratingCtrl.appFound)
+
 
 
 /* admin */
