@@ -283,7 +283,7 @@ async function listPlanner(req, res) {
         let reviews = await cursor.toArray();
         let sum = 0
         totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+            sum += Number(item.rating)
         })
         planners[i]['avgRating'] = sum / reviews.length
         if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0
@@ -398,7 +398,7 @@ async function detailPlanner(req, res) {
         let reviews = await cursor.toArray();
         let sum = 0
         totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+            sum += Number(item.rating)
         })
         planners[i]['avgRating'] = sum / reviews.length
         if (!planners[i]['avgRating']) planners[i]['avgRating'] = 0

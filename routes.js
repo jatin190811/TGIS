@@ -169,6 +169,7 @@ router.post('/areas', mainCtrl.areas)
 router.post('/subscribe', ratingCtrl.subscribe)
 router.post('/app-link', ratingCtrl.appFound)
 
+router.post('/connect-me', ratingCtrl.connect)
 
 
 /* admin */

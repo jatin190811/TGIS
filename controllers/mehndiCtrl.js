@@ -279,7 +279,7 @@ async function listMehndi(req, res) {
         let reviews = await cursor.toArray();
         let sum = 0
         totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+            sum += Number(item.rating)
         })
         mehndis[i]['avgRating'] = sum / reviews.length
         if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0
@@ -366,6 +366,19 @@ async function detailMehndi(req, res) {
 
         cursor = collection.find({ tags: { $in: mehndis[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
+        relatedObjects.filter(i=>i._id!=id).map(async (item,index)=>{
+
+            collection = await client.db("admin").collection('reviews');
+            cursor = await collection.find({ pid: String(item['_id']) })
+            let reviews = await cursor.toArray();
+            let sum = 0
+            reviews.forEach((item) => {
+                sum += Number(item.rating)
+            })
+            item['avgRating'] = sum / reviews.length
+            if (!item['avgRating']) item['avgRating'] = 0
+            return item
+        });
         mehndis[0]['relatedObjects'] = relatedObjects;
 
         if (token) {
@@ -396,7 +409,7 @@ async function detailMehndi(req, res) {
         let reviews = await cursor.toArray();
         let sum = 0
         totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+            sum += Number(item.rating)
         })
         mehndis[i]['avgRating'] = sum / reviews.length
         if (!mehndis[i]['avgRating']) mehndis[i]['avgRating'] = 0

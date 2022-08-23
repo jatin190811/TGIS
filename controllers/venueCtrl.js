@@ -286,13 +286,13 @@ async function listVenue(req, res) {
 
         let collection = await client.db("admin").collection('reviews');
 
-        let cursor = await collection.find({ pid: venues[i]['_id'] })
+        let cursor = await collection.find({ pid: String(venues[i]['_id']) })
 
         let reviews = await cursor.toArray();
      
         let sum = 0
         totalRating = reviews.forEach((item) => {
-            sum += number(item.rating)
+            sum += Number(item.rating)
         })
         venues[i]['avgRating'] = sum / reviews.length
         if (!venues[i]['avgRating']) venues[i]['avgRating'] = 0
@@ -324,9 +324,6 @@ async function listVenue(req, res) {
 
     if (venues) {
 
-      
-
-
         if (search) {
             venues = venues.filter(i => {
                 return String(i.name).toLowerCase().match(String(search).toLowerCase()) || String(i.address).toLowerCase().match(String(search).toLowerCase())
@@ -355,7 +352,6 @@ async function listVenue(req, res) {
 
                     }
                 })
-                console.log(i.name, contains ,'======')
                 return contains
             })
         }
@@ -388,11 +384,23 @@ async function detailVenue(req, res) {
     let venues = await cursor.toArray()
 
     if (venues.length) {
-        cursor = collection.find({ tags: { $in: venues[0]['tags'] } }).limit(3)
+        cursor = collection.find({tags: { $in: venues[0]['tags'] } }).limit(3)
         let relatedObjects = await cursor.toArray();
-        console.log(venues[0]['tags'])
-        venues[0]['relatedObjects'] = relatedObjects;
+     
+        relatedObjects.filter(i=>i._id!=id).map(async (item,index)=>{
 
+            collection = await client.db("admin").collection('reviews');
+            cursor = await collection.find({ pid: String(item['_id']) })
+            let reviews = await cursor.toArray();
+            let sum = 0
+            reviews.forEach((item) => {
+                sum += Number(item.rating)
+            })
+            item['avgRating'] = sum / reviews.length
+            if (!item['avgRating']) item['avgRating'] = 0
+            return item
+        });
+        venues[0]['relatedObjects'] =relatedObjects
 
         if (token) {
             let i = 0

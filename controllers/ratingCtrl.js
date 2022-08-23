@@ -62,7 +62,40 @@ async function addRating(req, res) {
 
 }
 
+async function connect(req, res) {
+    let token = req.headers['x-access-token'];
+    if (!token) {
+        return res.json({ status: 'error', error: '010', message: 'Token not found' })
+    } else {
+        token = token
+    }
 
+
+    if (!req.body.pid) {
+        return res.json({ status: 'error', error: '005', message: 'Product ID not found' })
+    } else {
+        pid = req.body.pid
+    }
+
+    let collection = await client.db("admin").collection('users');
+    let cursor = collection.find({ token })
+    let user = await cursor.toArray();
+
+    if (user.length) {
+        let _id = user[0]['_id']
+        let collection = await client.db("admin").collection('vendorConnection');
+        let result = await collection.insertOne({ uid: _id, pid, isConnected:false, currentDate: new Date().toLocaleString() })
+        if (result.acknowledged) {
+            return res.json({ status: 'success', message: 'Successfully Saved', data: {} })
+        } else {
+            return res.json({ status: 'error', error: '009', message: 'Something went wrong' })
+        }
+
+    } else {
+        return res.json({ status: 'error', error: '014', message: 'Session Expired' })
+    }
+
+}
 
 
 async function listRating(req, res) {
@@ -160,3 +193,4 @@ exports.add = addRating
 exports.list = listRating
 exports.subscribe = subscribe
 exports.appFound = appFound
+exports.connect =connect
