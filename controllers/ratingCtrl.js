@@ -124,7 +124,7 @@ async function subscribe(req, res) {
     let cursor = collection.find({ email })
     let subscribers = await cursor.toArray();
 
-    if (!!subscribers.length) {
+    if (!subscribers.length) {
         let _id = user[0]['_id']
         let result = await collection.insertOne({ email })
         if (result.acknowledged) {
