@@ -152,7 +152,7 @@ async function appFound(req, res) {
         phone = String(req.body.phone).trim()
     }
 
-    return res.json({ status: 'success', message: 'Successfully Subscribed', data: {} })
+    return res.json({ status: 'success', message: 'Link Successfully sent', data: {} })
 }
 
 
